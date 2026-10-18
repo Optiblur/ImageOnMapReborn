@@ -1,0 +1,110 @@
+name: ImageOnMapReborn
+version: '${project.version}'
+main: pl.iomreborn.ImageOnMapReborn
+api-version: '1.20'
+description: Load pictures from the Internet onto maps. Unofficial successor of ImageOnMap for 1.20.1+, reads its data.
+authors: [optiblur]
+softdepend: [ImageOnMap]
+
+commands:
+  tomap:
+    description: Render an image from the Internet onto map(s).
+    usage: /<command> <URL> [resize|resize-stretched|resize-covered] [width height]
+  maps:
+    description: Open the GUI listing your maps.
+    usage: /<command> [player]
+  givemap:
+    description: Give a map from a player's maps to a player.
+    usage: /<command> <player> [owner:]<map name>
+  maptool:
+    description: Manage the maps (new, list, get, getremaining, explore, give, rename, update, delete, import, reload).
+    usage: /<command> help
+
+# Same permission nodes as ImageOnMap, so existing permission setups keep working.
+permissions:
+  imageonmap.*:
+    description: All user permissions (moderation and administrative permissions are not included).
+    default: true
+    children:
+      imageonmap.userender: true
+      imageonmap.new: true
+      imageonmap.list: true
+      imageonmap.get: true
+      imageonmap.explore: true
+      imageonmap.rename: true
+      imageonmap.delete: true
+      imageonmap.update: true
+      imageonmap.placesplattermap: true
+      imageonmap.removesplattermap: true
+      imageonmap.placeinvisiblesplattermap: true
+      imageonmap.bypasswhitelist: true
+
+  imageonmap.userender:
+    description: Use /tomap (legacy alias of imageonmap.new).
+    default: true
+  imageonmap.new:
+    description: Use /tomap and /maptool getremaining.
+    default: true
+  imageonmap.list:
+    description: List your images (/maptool list) and open /maps.
+    default: true
+  imageonmap.listother:
+    description: List the images of other players.
+    default: op
+  imageonmap.explore:
+    description: Open the GUI with your maps (/maps).
+    default: true
+  imageonmap.exploreother:
+    description: Open the GUI with the maps of other players (/maps <player>).
+    default: op
+  imageonmap.get:
+    description: Get again a map you rendered (/maptool get, GUI).
+    default: true
+  imageonmap.getother:
+    description: Get a map rendered by another player.
+    default: op
+  imageonmap.rename:
+    description: Rename your images.
+    default: true
+  imageonmap.renameother:
+    description: Rename the images of other players.
+    default: op
+  imageonmap.delete:
+    description: Delete your images.
+    default: true
+  imageonmap.deleteother:
+    description: Delete the images of other players.
+    default: op
+  imageonmap.update:
+    description: Replace the picture of one of your images (/maptool update).
+    default: true
+  imageonmap.updateother:
+    description: Replace the picture of an image of another player.
+    default: op
+  imageonmap.give:
+    description: Give maps to players (/givemap, /maptool give).
+    default: op
+  imageonmap.placesplattermap:
+    description: Place a whole poster at once with a splatter map.
+    default: true
+  imageonmap.removesplattermap:
+    description: Remove a whole poster by sneaking and hitting one of its maps.
+    default: true
+  imageonmap.placeinvisiblesplattermap:
+    description: Item frames of a placed splatter map become invisible.
+    default: true
+  imageonmap.administrative:
+    description: Administrative commands (/maptool import, /maptool reload).
+    default: op
+  imageonmap.bypasssize:
+    description: Ignore limit-map-size-x / limit-map-size-y.
+    default: op
+  imageonmap.bypassmaplimit:
+    description: Ignore map-player-limit and imageonmap.maplimit.<n>.
+    default: op
+  imageonmap.bypassimagelimit:
+    description: Ignore imageonmap.imagelimit.<n>.
+    default: op
+  imageonmap.bypasswhitelist:
+    description: Ignore images-hostnames-whitelist (negate it to enforce the whitelist).
+    default: true
