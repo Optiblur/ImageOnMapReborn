@@ -9,8 +9,7 @@ pluginu** – obrazy na ścianach, w ramkach i w ekwipunkach graczy działają d
 tworzyć od nowa.
 
 > Projekt nie jest powiązany z autorami ImageOnMap ani zespołem zDevelopers.
-> Autor: **optiblur**. Kod napisał asystent AI Claude (Anthropic) na zlecenie i według wymagań autora –
-> szczegóły w sekcji [Autorzy i podziękowania](#autorzy-i-podziękowania).
+> Autor: **optiblur** – zobacz [Autorzy i podziękowania](#autorzy-i-podziękowania).
 
 - Silniki: **Paper / Purpur / Spigot**
 - Wersje Minecrafta: **1.20.1 i nowsze** – przetestowane na Paper **1.20.1**, **1.21.11** i **26.3**
@@ -179,10 +178,9 @@ jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, pa
 
 ## Autorzy i podziękowania
 
-- **Autor projektu:** optiblur – pomysł, wymagania, decyzje i testy na serwerze.
-- **Kod:** napisany przez asystenta AI **Claude** (Anthropic) na zlecenie autora. Oprócz testów
-  jednostkowych plugin był uruchamiany na serwerach Paper 1.20.1, 1.21.11 i 26.3 (import starych
-  danych, wyświetlanie map, komendy z konsoli).
+- **Autor projektu:** optiblur – pomysł, wymagania, decyzje i testy.
+- **Testy:** oprócz testów jednostkowych plugin był uruchamiany na serwerach Paper 1.20.1, 1.21.11
+  i 26.3 (import starych danych, wyświetlanie map, komendy z konsoli).
 - **ImageOnMap** – dziękujemy twórcom oryginału, na którym wzorowane są funkcje, komendy,
   uprawnienia i format danych: Moribus (2013), ProkopyL (2015), Amaury Carrade (2016–2021),
   Vlammar (2019–2021) i wszystkim współtwórcom z zespołu
@@ -204,3 +202,7 @@ Jest rozpowszechniany bez jakiejkolwiek gwarancji. Pełny tekst licencji jest w 
 Dołączona do pliku `.jar` biblioteka [TwelveMonkeys ImageIO](https://github.com/haraldk/TwelveMonkeys)
 (odczyt WebP) jest na licencji BSD-3-Clause – jej tekst jest w
 `src/main/resources/META-INF/LICENSE-TwelveMonkeys.txt` i w samym pliku `.jar`.
+
+---
+
+<sub>Wykonane przez optiblur, z pomocą Claude (Anthropic).</sub>

@@ -9,8 +9,7 @@ by itself** – pictures on walls, in item frames and in player inventories keep
 be created again.
 
 > This project is not affiliated with the authors of ImageOnMap or the zDevelopers team.
-> Author: **optiblur**. The code was written by the AI assistant Claude (Anthropic) on the author's
-> request and following the author's requirements – see [Authors and credits](#authors-and-credits).
+> Author: **optiblur** – see [Authors and credits](#authors-and-credits).
 
 - Server software: **Paper / Purpur / Spigot**
 - Minecraft versions: **1.20.1 and newer** – tested on Paper **1.20.1**, **1.21.11** and **26.3**
@@ -180,10 +179,9 @@ the `pl.iomreborn.lib` package so it cannot clash with other plugins). `mvn test
 
 ## Authors and credits
 
-- **Project author:** optiblur – idea, requirements, decisions and server testing.
-- **Code:** written by the AI assistant **Claude** (Anthropic) on the author's request. Besides the
-  unit tests, the plugin was run on Paper 1.20.1, 1.21.11 and 26.3 servers (old data import, map
-  display, console commands).
+- **Project author:** optiblur – idea, requirements, decisions and testing.
+- **Testing:** besides the unit tests, the plugin was run on Paper 1.20.1, 1.21.11 and 26.3 servers
+  (old data import, map display, console commands).
 - **ImageOnMap** – thanks to the creators of the original, which the features, commands, permissions
   and data format follow: Moribus (2013), ProkopyL (2015), Amaury Carrade (2016–2021),
   Vlammar (2019–2021) and all contributors of the
@@ -204,3 +202,7 @@ distributed without any warranty. The full license text is in the [LICENSE](LICE
 The [TwelveMonkeys ImageIO](https://github.com/haraldk/TwelveMonkeys) library bundled in the `.jar`
 (WebP reading) is licensed under BSD-3-Clause – its text is in
 `src/main/resources/META-INF/LICENSE-TwelveMonkeys.txt` and inside the `.jar` itself.
+
+---
+
+<sub>Made by optiblur, with the help of Claude (Anthropic).</sub>
