@@ -1,0 +1,252 @@
+# ImageOnMapReborn – wiadomości po polsku.
+# Kolory: &a, &c... (oraz &#RRGGBB). Zmienne: {0}, {1}...
+# Brakujące klucze są brane z wersji wbudowanej w plugin.
+
+general:
+  no-permission: "&cNie możesz tego zrobić."
+  player-only: "&cTej komendy może użyć tylko gracz."
+  player-not-found: "&cNie znaleziono gracza o nicku {0}."
+  player-not-online: "&c{0} nie jest teraz na serwerze."
+  map-not-found: "&cNie ma obrazu o takiej nazwie."
+  owner-required: "&cW konsoli dopisz właściciela: <gracz>:<nazwa mapy>."
+  unknown-subcommand: "&cNie ma takiej komendy. Wpisz &f/{0} help&c."
+  usage: "&cJak użyć: &f{0}"
+  no-longer-allowed: "&cTwoje uprawnienia się zmieniły, ta akcja nie jest już dostępna."
+  inventory-overflow: "&eMasz pełny ekwipunek, więc część map czeka na Ciebie. Odbierz je komendą &f/maptool getremaining&e."
+  internal-error: "&cCoś poszło nie tak po stronie serwera, szczegóły są w konsoli."
+
+map:
+  default-name: "Mapa"
+
+item:
+  single:
+    name: "&6{0}"
+  part:
+    name-grid: "&6{0} &7[wiersz {1}, kol. {2}]"
+    name-index: "&6{0} &7[kawałek {1}]"
+  splatter:
+    name: "&6{0} &8| &ePlakat &7{1}×{2}"
+    lore:
+      - "&8ID: {0}"
+      - ""
+      - "&9Rozmiar"
+      - "&7{1} szer. × {2} wys. – {3} ramek"
+      - ""
+      - "&9Wieszanie"
+      - "&7Powieś puste ramki na ścianie, podłodze"
+      - "&7albo suficie – tyle, ile wynosi rozmiar."
+      - "&7Trzymając ten przedmiot, kliknij PPM"
+      - "&7lewą dolną ramkę."
+      - ""
+      - "&9Zdejmowanie"
+      - "&7Kucnij i uderz dowolną mapę plakatu."
+
+render:
+  busy: "&cChwila, Twój poprzedni obraz jeszcze się przetwarza."
+  started: "&2Przygotowuję obraz..."
+  finished: "&2Obraz gotowy!"
+  failed: "&cNie udało się utworzyć mapy: {0}"
+  update-started: "&2Podmieniam obraz..."
+  update-finished: "&2Na mapach jest już nowy obraz."
+
+error:
+  invalid-url: "ten link nie wygląda na poprawny."
+  unsupported-protocol: "działają tylko linki zaczynające się od http:// albo https://."
+  untrusted-host: "obrazy z tej strony są tu niedozwolone. Jeśli uważasz, że powinny być, napisz do administracji."
+  private-address: "linki do sieci lokalnej i prywatnych adresów są zablokowane."
+  unknown-host: "nie znaleziono serwera {0}."
+  http: "strona odpowiedziała kodem HTTP {0} {1}."
+  too-many-redirects: "link przekierowuje zbyt wiele razy."
+  download-too-large: "plik jest większy niż limit {0} MB."
+  timeout: "strona zbyt długo nie odpowiadała."
+  download-failed: "pobieranie się nie udało ({0})."
+  not-an-image: "link nie prowadzi do obrazu PNG, JPEG, GIF, BMP ani WebP."
+  imgur-gallery: "nie da się użyć albumów i galerii Imgur. Otwórz obraz, kliknij go PPM i skopiuj adres obrazu."
+  image-too-wide: "obraz jest szerszy niż dozwolone {0} px."
+  image-too-tall: "obraz jest wyższy niż dozwolone {0} px."
+  image-too-big: "obraz {0} × {1} px jest za duży do przetworzenia."
+  poster-too-big: "plakat z {0} × {1} map byłby za duży."
+  limit-server-maps: "serwer wykorzystał już wszystkie mapy przeznaczone na obrazy."
+  limit-player-maps: "przekroczyłbyś swój limit {0} map."
+  limit-permission-images: "możesz mieć najwyżej {0} obrazów, a masz już {1}."
+  limit-permission-maps: "możesz użyć najwyżej {0} map, a używasz już {1}."
+  save-failed: "nie udało się zapisać obrazu na dysku serwera."
+  out-of-memory: "serwerowi zabrakło pamięci przy tym obrazie."
+  internal: "wystąpił nieoczekiwany błąd, szczegóły są w konsoli."
+
+splatter:
+  no-permission: "&cNie możesz wieszać plakatów."
+  not-enough-space: "&cTen plakat potrzebuje tutaj {0} × {1} pustych ramek."
+
+command:
+  help:
+    header: "&6ImageOnMapReborn &7v{0} &8– &7dostępne komendy:"
+    entry: "&f{0} &8– &7{1}"
+  new:
+    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [szerokość wysokość]"
+    description: "zamienia obraz z internetu na mapy"
+    no-url: "&cPodaj link do obrazu."
+    invalid-mode: "&cNieznany tryb. Wybierz resize, resize-stretched albo resize-covered."
+    invalid-size: "&cPodaj rozmiar w mapach jako dwie liczby (4 3) albo jako 4x3 lub 4*3."
+  list:
+    usage: "/maptool list [gracz]"
+    description: "pokazuje obrazy (kliknij, żeby dostać mapę)"
+    none: "&7Nie ma jeszcze żadnych obrazów."
+    header:
+      one: "&f&l{0} obraz:"
+      few: "&f&l{0} obrazy:"
+      many: "&f&l{0} obrazów:"
+    hover: "&a&l{0}\n&7{1}, {2}\n\n&7Kliknij, żeby go dostać"
+    console-entry: "&f{0} &7– {1} ({2})"
+    parts: "kawałków: {0}"
+  get:
+    usage: "/maptool get [gracz:]<nazwa mapy>"
+    description: "daje kopię jednego z Twoich obrazów"
+  getremaining:
+    usage: "/maptool getremaining"
+    description: "wydaje mapy, które nie zmieściły się w ekwipunku"
+    none: "&7Nic na Ciebie nie czeka."
+    inventory-full: "&cNajpierw zrób trochę miejsca w ekwipunku."
+    remaining:
+      one: "&7Czeka jeszcze {0} mapa."
+      few: "&7Czekają jeszcze {0} mapy."
+      many: "&7Czeka jeszcze {0} map."
+    done: "&aOdebrano wszystko."
+  explore:
+    usage: "/maps [gracz]"
+    description: "otwiera przeglądarkę obrazów"
+  give:
+    usage: "/givemap <gracz> [właściciel:]<nazwa mapy>"
+    description: "przekazuje obraz graczowi"
+    success: "&a{1} dostał(a) &6{0}&a."
+  rename:
+    usage: "/maptool rename [gracz:]<nazwa mapy> <nowa nazwa>"
+    description: "zmienia nazwę obrazu"
+    quotes-hint: "&7Nazwy ze spacjami wpisz w cudzysłowie: &f/maptool rename \"Stara nazwa\" \"Nowa nazwa\""
+    invalid-name: "&cNazwa nie może być pusta."
+    success: "&aObraz nazywa się teraz &6{0}&a (ID: {1})."
+    prompt: "&eNapisz na czacie nową nazwę dla &6{0}&e albo &fanuluj&e, żeby zostawić starą."
+    cancelled: "&7Nazwa została bez zmian."
+  update:
+    usage: "/maptool update [gracz:]<nazwa mapy> <nowy link> [stretched|covered]"
+    description: "rysuje inny obraz na tych samych mapach"
+    invalid-mode: "&cNieznany tryb. Użyj stretched albo covered, albo nic, żeby zachować proporcje."
+  delete:
+    usage: "/maptool delete [gracz:]<nazwa mapy>"
+    description: "usuwa obraz na dobre"
+    confirm-prompt: "&fUsunąć &6{0}&f?"
+    confirm-button: "&c&l[Tak, usuń]"
+    confirm-hover: "&cObrazu ani jego map nie da się potem odzyskać."
+    confirm-console: "&fŻeby naprawdę usunąć &6{0}&f, wpisz: &e{1}"
+    success: "&aObraz został usunięty."
+  import:
+    usage: "/maptool import [folder]"
+    description: "ponownie importuje obrazy ze starego ImageOnMap"
+    start: "&7Wczytuję dane ImageOnMap z &f{0}&7..."
+    not-found: "&cW {0} nie ma danych ImageOnMap."
+    result: "&aImport gotowy: odczytano plików graczy {0}, dodano obrazów {1} (map {2}), już znanych {3}, skopiowano plików obrazów {4}, błędów {5}."
+  reload:
+    usage: "/maptool reload"
+    description: "przeładowuje config.yml i wiadomości"
+    done: "&aPrzeładowano ustawienia i wiadomości."
+
+gui:
+  list:
+    title:
+      own: "Moje obrazy ({0})"
+      other: "Obrazy gracza {1} ({0})"
+    item:
+      name: "&a&l{0}"
+      single: "&fJedna mapa"
+      poster: "&fPlakat, {0}×{1} map"
+      poster-parts: "&fPlakat, kawałków: {0}"
+      id: "&8ID: {0}"
+      left-click: "&eLPM &7– odbierz"
+      right-click: "&ePPM &7– opcje"
+    empty:
+      own: "&cNie masz jeszcze obrazów"
+      own-hint:
+        - "&7Pierwszy stworzysz komendą"
+        - "&f/tomap <link> [resize]"
+      own-no-permission:
+        - "&7Nie możesz tworzyć obrazów."
+      other: "&c{0} nie ma żadnych obrazów."
+  nav:
+    previous: "&e« Poprzednia strona"
+    next: "&eNastępna strona »"
+    page: "&7Strona {0} z {1}"
+    left: "&e◀ W lewo"
+    right: "&eW prawo ▶"
+    up: "&e▲ W górę"
+    down: "&e▼ W dół"
+    shift-hint:
+      - "&7Shift + klik przeskakuje o cały ekran."
+  stats:
+    title: "&9Podsumowanie"
+    images:
+      one: "&f{0}&7 obraz"
+      few: "&f{0}&7 obrazy"
+      many: "&f{0}&7 obrazów"
+    maps:
+      one: "&f{0}&7 mapa w użyciu"
+      few: "&f{0}&7 mapy w użyciu"
+      many: "&f{0}&7 map w użyciu"
+    limits-title: "&9Limity"
+    server-limit: "&7Cały serwer: &f{0}"
+    player-limit: "&7Na gracza: &f{0}"
+    unlimited: "bez limitu"
+    quota-used: "&7Wykorzystano: &f{0}%"
+    maps-left:
+      one: "&7Dostępna jeszcze &f{0}&7 mapa"
+      few: "&7Dostępne jeszcze &f{0}&7 mapy"
+      many: "&7Dostępnych jeszcze &f{0}&7 map"
+  detail:
+    title:
+      own: "Moje obrazy » {0}"
+      other: "{1} » {0}"
+    back:
+      name: "&a« Wróć"
+      lore:
+        - "&7Powrót do listy."
+    rename:
+      name: "&9Zmień nazwę"
+      lore:
+        - "&7Wybierz nową nazwę obrazu."
+        - "&7Nazwa służy tylko do szukania obrazów."
+    delete:
+      name: "&cUsuń"
+      lore:
+        - "&7Usuwa ten obraz na stałe,"
+        - "&7jego mapy staną się puste."
+        - ""
+        - "&7Trzeba będzie potwierdzić."
+    get-all:
+      name: "&aOdbierz"
+      lore:
+        - "&7Daje mapę albo przedmiot-plakat,"
+        - "&7który wiesza wszystkie kawałki naraz."
+    part:
+      name: "&aKawałek"
+      row: "&7Wiersz &f{0}"
+      column: "&7Kolumna &f{0}"
+      index: "&7Kawałek &f{0}"
+      click: "&eKliknij&7, żeby wziąć tylko ten kawałek"
+    single:
+      click: "&eKliknij&7, żeby dostać tę mapę"
+  delete:
+    title: "Usunąć {0}?"
+    info:
+      name: "&cTen obraz zostanie usunięty"
+      lore:
+        - "&7Jego mapy staną się puste,"
+        - "&7także te powieszone na ścianach."
+        - ""
+        - "&7Nazwa: &f{0}"
+        - "&7ID: &f{1}"
+        - "&7Map: &f{2}"
+    confirm: "&cTak, usuń"
+    confirm-lore:
+      - "&7Tego nie da się cofnąć."
+    cancel: "&aNie, zostaw"
+    cancel-lore:
+      - "&7Wróć bez usuwania."

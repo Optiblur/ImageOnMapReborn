@@ -1,0 +1,247 @@
+# ImageOnMapReborn – English messages.
+# Color codes: &a, &c... (and &#RRGGBB). Placeholders: {0}, {1}...
+# Keys missing from this file are taken from the version bundled with the plugin.
+
+general:
+  no-permission: "&cYou are not allowed to do this."
+  player-only: "&cOnly players can use this command."
+  player-not-found: "&cNo player named {0} could be found."
+  player-not-online: "&c{0} is not online right now."
+  map-not-found: "&cNo image with that name was found."
+  owner-required: "&cWhen running this from the console, add the owner: <player>:<map name>."
+  unknown-subcommand: "&cThat subcommand doesn't exist. Try &f/{0} help&c."
+  usage: "&cHow to use it: &f{0}"
+  no-longer-allowed: "&cYour permissions changed, this action is not available anymore."
+  inventory-overflow: "&eYour inventory is full, so some maps are waiting for you. Run &f/maptool getremaining&e to collect them."
+  internal-error: "&cSomething went wrong on the server, the details are in the console."
+
+map:
+  default-name: "Map"
+
+item:
+  single:
+    name: "&6{0}"
+  part:
+    name-grid: "&6{0} &7[row {1}, col {2}]"
+    name-index: "&6{0} &7[piece {1}]"
+  splatter:
+    name: "&6{0} &8| &ePoster &7{1}×{2}"
+    lore:
+      - "&8ID: {0}"
+      - ""
+      - "&9Size"
+      - "&7{1} wide, {2} high – {3} item frames"
+      - ""
+      - "&9Hanging it"
+      - "&7Put up empty item frames on a wall,"
+      - "&7a floor or a ceiling, as many as the"
+      - "&7size above. Right-click the lower-left"
+      - "&7one while holding this item."
+      - ""
+      - "&9Taking it down"
+      - "&7Crouch and punch any of its maps."
+
+render:
+  busy: "&cHold on, your previous image is still being processed."
+  started: "&2Working on your image..."
+  finished: "&2Your image is ready!"
+  failed: "&cCould not create the map: {0}"
+  update-started: "&2Replacing the picture..."
+  update-finished: "&2The new picture is now shown on the maps."
+
+error:
+  invalid-url: "that link doesn't look valid."
+  unsupported-protocol: "only links starting with http:// or https:// work."
+  untrusted-host: "pictures from this website are not allowed here. Ask an administrator if you think they should be."
+  private-address: "links to local or private networks are blocked."
+  unknown-host: "the server {0} could not be found."
+  http: "the website answered with HTTP {0} {1}."
+  too-many-redirects: "the link redirects too many times."
+  download-too-large: "the file is bigger than the {0} MB limit."
+  timeout: "the website took too long to respond."
+  download-failed: "the download did not work ({0})."
+  not-an-image: "the link does not point to a PNG, JPEG, GIF, BMP or WebP picture."
+  imgur-gallery: "Imgur albums and galleries can't be used. Open the picture, right-click it and copy the image address."
+  image-too-wide: "the picture is wider than the allowed {0} px."
+  image-too-tall: "the picture is taller than the allowed {0} px."
+  image-too-big: "a {0} × {1} px picture is too large to process."
+  poster-too-big: "a poster of {0} × {1} maps would be too large."
+  limit-server-maps: "the server has used up all the maps it allows for images."
+  limit-player-maps: "you would go over your limit of {0} maps."
+  limit-permission-images: "you may own at most {0} images and you already have {1}."
+  limit-permission-maps: "you may use at most {0} maps and you already use {1}."
+  save-failed: "the picture could not be written to the server's disk."
+  out-of-memory: "the server ran out of memory with this picture."
+  internal: "an unexpected error happened, see the console."
+
+splatter:
+  no-permission: "&cYou can't hang posters."
+  not-enough-space: "&cThis poster needs {0} × {1} empty item frames here."
+
+command:
+  help:
+    header: "&6ImageOnMapReborn &7v{0} &8– &7available commands:"
+    entry: "&f{0} &8– &7{1}"
+  new:
+    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [width height]"
+    description: "turns a picture from the web into maps"
+    no-url: "&cPlease give the link of a picture."
+    invalid-mode: "&cUnknown mode. Pick resize, resize-stretched or resize-covered."
+    invalid-size: "&cGive the size in maps as two numbers (4 3), or as 4x3 or 4*3."
+  list:
+    usage: "/maptool list [player]"
+    description: "shows the images (click one to receive it)"
+    none: "&7There are no images yet."
+    header:
+      one: "&f&l{0} image:"
+      other: "&f&l{0} images:"
+    hover: "&a&l{0}\n&7{1}, {2}\n\n&7Click to receive it"
+    console-entry: "&f{0} &7– {1} ({2})"
+    parts: "{0} pieces"
+  get:
+    usage: "/maptool get [player:]<map name>"
+    description: "gives you a copy of one of your images"
+  getremaining:
+    usage: "/maptool getremaining"
+    description: "hands out the maps that did not fit in your inventory"
+    none: "&7Nothing is waiting for you."
+    inventory-full: "&cFree up some inventory space first."
+    remaining:
+      one: "&7{0} more map is still waiting."
+      other: "&7{0} more maps are still waiting."
+    done: "&aYou have collected everything."
+  explore:
+    usage: "/maps [player]"
+    description: "opens the image browser"
+  give:
+    usage: "/givemap <player> [owner:]<map name>"
+    description: "hands an image to a player"
+    success: "&a{1} received &6{0}&a."
+  rename:
+    usage: "/maptool rename [player:]<map name> <new name>"
+    description: "changes the name of an image"
+    quotes-hint: "&7Use quotes around names with spaces: &f/maptool rename \"Old name\" \"New name\""
+    invalid-name: "&cThe name can't be empty."
+    success: "&aThe image is now called &6{0}&a (ID: {1})."
+    prompt: "&eWrite the new name for &6{0}&e in the chat, or &fcancel&e to keep it."
+    cancelled: "&7The name was not changed."
+  update:
+    usage: "/maptool update [player:]<map name> <new link> [stretched|covered]"
+    description: "draws a different picture on the same maps"
+    invalid-mode: "&cUnknown mode. Use stretched or covered, or nothing to keep the proportions."
+  delete:
+    usage: "/maptool delete [player:]<map name>"
+    description: "removes an image for good"
+    confirm-prompt: "&fDelete &6{0}&f?"
+    confirm-button: "&c&l[Yes, delete]"
+    confirm-hover: "&cThe image and its maps can't be recovered afterwards."
+    confirm-console: "&fTo really delete &6{0}&f, run: &e{1}"
+    success: "&aThe image was deleted."
+  import:
+    usage: "/maptool import [folder]"
+    description: "imports the images of the old ImageOnMap again"
+    start: "&7Reading ImageOnMap data from &f{0}&7..."
+    not-found: "&cThere is no ImageOnMap data in {0}."
+    result: "&aImport complete: {0} player files read, {1} images ({2} maps) added, {3} already known, {4} picture files copied, {5} errors."
+  reload:
+    usage: "/maptool reload"
+    description: "reloads config.yml and the messages"
+    done: "&aSettings and messages reloaded."
+
+gui:
+  list:
+    title:
+      own: "My images ({0})"
+      other: "Images of {1} ({0})"
+    item:
+      name: "&a&l{0}"
+      single: "&fOne map"
+      poster: "&fPoster, {0}×{1} maps"
+      poster-parts: "&fPoster, {0} pieces"
+      id: "&8ID: {0}"
+      left-click: "&eLeft-click &7to receive it"
+      right-click: "&eRight-click &7to open its options"
+    empty:
+      own: "&cNo images yet"
+      own-hint:
+        - "&7Create your first one with"
+        - "&f/tomap <link> [resize]"
+      own-no-permission:
+        - "&7You are not allowed to create images."
+      other: "&c{0} has no images."
+  nav:
+    previous: "&e« Back a page"
+    next: "&eNext page »"
+    page: "&7Page {0} of {1}"
+    left: "&e◀ Left"
+    right: "&eRight ▶"
+    up: "&e▲ Up"
+    down: "&e▼ Down"
+    shift-hint:
+      - "&7Shift-click to jump a whole screen."
+  stats:
+    title: "&9Overview"
+    images:
+      one: "&f{0}&7 image"
+      other: "&f{0}&7 images"
+    maps:
+      one: "&f{0}&7 map in use"
+      other: "&f{0}&7 maps in use"
+    limits-title: "&9Limits"
+    server-limit: "&7Whole server: &f{0}"
+    player-limit: "&7Each player: &f{0}"
+    unlimited: "no limit"
+    quota-used: "&7Used: &f{0}%"
+    maps-left:
+      one: "&f{0}&7 map still available"
+      other: "&f{0}&7 maps still available"
+  detail:
+    title:
+      own: "My images » {0}"
+      other: "{1} » {0}"
+    back:
+      name: "&a« Back"
+      lore:
+        - "&7Return to the list."
+    rename:
+      name: "&9Rename"
+      lore:
+        - "&7Pick a new name for this image."
+        - "&7Names only help you find your images."
+    delete:
+      name: "&cDelete"
+      lore:
+        - "&7Removes this image permanently,"
+        - "&7its maps turn blank."
+        - ""
+        - "&7You will have to confirm."
+    get-all:
+      name: "&aGet it"
+      lore:
+        - "&7Gives the map, or the poster item"
+        - "&7that hangs every piece at once."
+    part:
+      name: "&aPiece"
+      row: "&7Row &f{0}"
+      column: "&7Column &f{0}"
+      index: "&7Piece &f{0}"
+      click: "&eClick &7to take just this piece"
+    single:
+      click: "&eClick &7to receive this map"
+  delete:
+    title: "Delete {0}?"
+    info:
+      name: "&cThis image will be deleted"
+      lore:
+        - "&7Its maps will become blank,"
+        - "&7including the ones on walls."
+        - ""
+        - "&7Name: &f{0}"
+        - "&7ID: &f{1}"
+        - "&7Maps: &f{2}"
+    confirm: "&cYes, delete it"
+    confirm-lore:
+      - "&7This can't be undone."
+    cancel: "&aNo, keep it"
+    cancel-lore:
+      - "&7Go back without deleting."
