@@ -9,7 +9,7 @@ pluginu** – obrazy na ścianach, w ramkach i w ekwipunkach graczy działają d
 tworzyć od nowa.
 
 > Projekt nie jest powiązany z autorami ImageOnMap ani zespołem zDevelopers.
-> Autor: **optiblur** – zobacz [Autorzy i podziękowania](#autorzy-i-podziękowania).
+> Autor: **Optiblur** – zobacz [Autorzy i podziękowania](#autorzy-i-podziękowania).
 
 - Silniki: **Paper / Purpur / Spigot**
 - Wersje Minecrafta: **1.20.1 i nowsze** – przetestowane na Paper **1.20.1**, **1.21.11** i **26.3**
@@ -178,7 +178,7 @@ jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, pa
 
 ## Autorzy i podziękowania
 
-- **Autor projektu:** optiblur – pomysł, wymagania, decyzje i testy.
+- **Autor projektu:** Optiblur – pomysł, wymagania, decyzje i testy.
 - **Testy:** oprócz testów jednostkowych plugin był uruchamiany na serwerach Paper 1.20.1, 1.21.11
   i 26.3 (import starych danych, wyświetlanie map, komendy z konsoli).
 - **ImageOnMap** – dziękujemy twórcom oryginału, na którym wzorowane są funkcje, komendy,
@@ -192,7 +192,7 @@ konfiguracji – tak, żeby migracja nie wymagała żadnej pracy.
 
 ## Licencja
 
-Copyright (C) 2026 optiblur
+Copyright (C) 2026 Optiblur
 
 Ten program jest wolnym oprogramowaniem: możesz go rozpowszechniać i/lub modyfikować na warunkach
 licencji **GNU General Public License w wersji 3** opublikowanej przez Free Software Foundation.
@@ -205,4 +205,4 @@ Dołączona do pliku `.jar` biblioteka [TwelveMonkeys ImageIO](https://github.co
 
 ---
 
-<sub>Wykonane przez optiblur, z pomocą Claude (Anthropic).</sub>
+<sub>Wykonane przez Optiblur, z pomocą Claude (Anthropic).</sub>
