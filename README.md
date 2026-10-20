@@ -9,7 +9,7 @@ by itself** – pictures on walls, in item frames and in player inventories keep
 be created again.
 
 > This project is not affiliated with the authors of ImageOnMap or the zDevelopers team.
-> Author: **optiblur** – see [Authors and credits](#authors-and-credits).
+> Author: **Optiblur** – see [Authors and credits](#authors-and-credits).
 
 - Server software: **Paper / Purpur / Spigot**
 - Minecraft versions: **1.20.1 and newer** – tested on Paper **1.20.1**, **1.21.11** and **26.3**
@@ -193,7 +193,7 @@ original – so that migrating takes no work at all.
 
 ## License
 
-Copyright (C) 2026 optiblur
+Copyright (C) 2026 Optiblur
 
 This program is free software: you can redistribute it and/or modify it under the terms of the
 **GNU General Public License version 3** as published by the Free Software Foundation. It is
@@ -205,4 +205,4 @@ The [TwelveMonkeys ImageIO](https://github.com/haraldk/TwelveMonkeys) library bu
 
 ---
 
-<sub>Made by optiblur, with the help of Claude (Anthropic).</sub>
+<sub>Made by Optiblur, with the help of Claude (Anthropic).</sub>
