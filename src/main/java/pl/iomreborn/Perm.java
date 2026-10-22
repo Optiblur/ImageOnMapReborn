@@ -6,7 +6,10 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import java.util.Locale;
 import java.util.OptionalInt;
 
-/** Permission nodes. Names are identical to ImageOnMap so existing permission setups keep working. */
+/**
+ * Permission nodes. Names are identical to ImageOnMap so existing permission setups keep working; the nodes for
+ * features ImageOnMap did not have follow the same style.
+ */
 public enum Perm {
     NEW("imageonmap.new", "imageonmap.userender"),
     LIST("imageonmap.list"),
@@ -29,7 +32,11 @@ public enum Perm {
     BYPASS_SIZE("imageonmap.bypasssize"),
     BYPASS_IMAGE_LIMIT("imageonmap.bypassimagelimit"),
     BYPASS_MAP_LIMIT("imageonmap.bypassmaplimit"),
-    BYPASS_WHITELIST("imageonmap.bypasswhitelist");
+    BYPASS_WHITELIST("imageonmap.bypasswhitelist"),
+    /** New in ImageOnMapReborn: animated GIFs become animated maps. */
+    ANIMATED("imageonmap.animated"),
+    /** New in ImageOnMapReborn: told about new plugin versions on join. */
+    NOTIFY_UPDATE("imageonmap.notifyupdate");
 
     /** {@code imageonmap.maplimit.<n>}: maximum number of Minecraft maps a player may use. */
     public static final String MAP_LIMIT_PREFIX = "imageonmap.maplimit.";

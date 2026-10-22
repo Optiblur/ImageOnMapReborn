@@ -9,7 +9,7 @@ softdepend: [ImageOnMap]
 commands:
   tomap:
     description: Render an image from the Internet onto map(s).
-    usage: /<command> <URL> [resize|resize-stretched|resize-covered] [width height]
+    usage: /<command> <URL> [resize|resize-stretched|resize-covered] [width height] [dither|nodither]
   maps:
     description: Open the GUI listing your maps.
     usage: /<command> [player]
@@ -38,6 +38,7 @@ permissions:
       imageonmap.removesplattermap: true
       imageonmap.placeinvisiblesplattermap: true
       imageonmap.bypasswhitelist: true
+      imageonmap.animated: true
 
   imageonmap.userender:
     description: Use /tomap (legacy alias of imageonmap.new).
@@ -108,3 +109,9 @@ permissions:
   imageonmap.bypasswhitelist:
     description: Ignore images-hostnames-whitelist (negate it to enforce the whitelist).
     default: true
+  imageonmap.animated:
+    description: Animated GIFs become animated maps (without it only their first frame is used).
+    default: true
+  imageonmap.notifyupdate:
+    description: Be told about new versions of the plugin when joining.
+    default: op

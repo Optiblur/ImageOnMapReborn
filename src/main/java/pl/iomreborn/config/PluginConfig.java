@@ -1,6 +1,7 @@
 package pl.iomreborn.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import pl.iomreborn.image.Dithering;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,12 @@ public final class PluginConfig {
     private final boolean protectItemFrames;
     private final boolean legacyImportEnabled;
     private final String legacyImportFolder;
+    private final Dithering dithering;
+    private final boolean animationsEnabled;
+    private final int animationMaxFrames;
+    private final int animationMaxMaps;
+    private final int animationMaxFps;
+    private final boolean checkForUpdates;
 
     private PluginConfig(FileConfiguration c) {
         lang = c.getString("lang", "");
@@ -59,6 +66,13 @@ public final class PluginConfig {
         legacyImportEnabled = c.getBoolean("legacy-import.enabled", true);
         String folder = c.getString("legacy-import.folder", "ImageOnMap");
         legacyImportFolder = folder == null || folder.isBlank() ? "ImageOnMap" : folder.trim();
+        dithering = Dithering.parse(c.getString("dithering", Dithering.FLOYD_STEINBERG.configName()),
+                Dithering.FLOYD_STEINBERG);
+        animationsEnabled = c.getBoolean("animated-gifs.enabled", true);
+        animationMaxFrames = clamp(c.getInt("animated-gifs.max-frames", 100), 2, 1000);
+        animationMaxMaps = clamp(c.getInt("animated-gifs.max-maps", 16), 1, 1000);
+        animationMaxFps = clamp(c.getInt("animated-gifs.max-fps", 10), 1, 20);
+        checkForUpdates = c.getBoolean("check-for-updates", true);
     }
 
     public static PluginConfig from(FileConfiguration config) {
@@ -142,5 +156,32 @@ public final class PluginConfig {
 
     public String legacyImportFolder() {
         return legacyImportFolder;
+    }
+
+    /** Dithering used for new pictures, unless the player chooses with "dither" / "nodither". */
+    public Dithering dithering() {
+        return dithering;
+    }
+
+    public boolean animationsEnabled() {
+        return animationsEnabled;
+    }
+
+    public int animationMaxFrames() {
+        return animationMaxFrames;
+    }
+
+    /** Largest animated picture, in maps. */
+    public int animationMaxMaps() {
+        return animationMaxMaps;
+    }
+
+    /** Highest number of frame changes per second sent for animated maps. */
+    public int animationMaxFps() {
+        return animationMaxFps;
+    }
+
+    public boolean checkForUpdates() {
+        return checkForUpdates;
     }
 }

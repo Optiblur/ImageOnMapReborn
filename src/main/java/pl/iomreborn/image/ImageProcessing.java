@@ -20,8 +20,14 @@ public final class ImageProcessing {
         if (image.getType() == BufferedImage.TYPE_INT_ARGB) {
             return image;
         }
+        return copy(image);
+    }
+
+    /** A new ARGB image with the same pixels. */
+    public static BufferedImage copy(BufferedImage image) {
         BufferedImage out = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = out.createGraphics();
+        graphics.setComposite(java.awt.AlphaComposite.Src);
         graphics.drawImage(image, 0, 0, null);
         graphics.dispose();
         return out;
@@ -98,25 +104,67 @@ public final class ImageProcessing {
         return out;
     }
 
-    /** Cuts an image into 128x128 tiles. Partial tiles are padded on both sides so the image stays centered. */
-    public static Poster split(BufferedImage image) {
+    /** Number of maps needed for a width (or height) in pixels. */
+    public static int mapsFor(int pixels) {
+        return Math.max(1, (pixels + MAP_SIZE - 1) / MAP_SIZE);
+    }
+
+    /**
+     * Centers an image on a canvas made of whole 128x128 maps (partial maps get transparent borders on both
+     * sides). Cutting this canvas into squares gives exactly the tiles of {@link #split(BufferedImage)}.
+     */
+    public static BufferedImage pad(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        int columns = Math.max(1, (width + MAP_SIZE - 1) / MAP_SIZE);
-        int rows = Math.max(1, (height + MAP_SIZE - 1) / MAP_SIZE);
-        int offsetX = (columns * MAP_SIZE - width) / 2;
-        int offsetY = (rows * MAP_SIZE - height) / 2;
+        int canvasWidth = mapsFor(width) * MAP_SIZE;
+        int canvasHeight = mapsFor(height) * MAP_SIZE;
+        BufferedImage canvas = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = canvas.createGraphics();
+        graphics.drawImage(image, (canvasWidth - width) / 2, (canvasHeight - height) / 2, null);
+        graphics.dispose();
+        return canvas;
+    }
 
+    /** Cuts an image into 128x128 tiles. Partial tiles are padded on both sides so the image stays centered. */
+    public static Poster split(BufferedImage image) {
+        return cut(pad(image));
+    }
+
+    /** Cuts a canvas made of whole maps (see {@link #pad(BufferedImage)}) into 128x128 tiles. */
+    public static Poster cut(BufferedImage canvas) {
+        int columns = canvas.getWidth() / MAP_SIZE;
+        int rows = canvas.getHeight() / MAP_SIZE;
         BufferedImage[] tiles = new BufferedImage[columns * rows];
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
                 BufferedImage tile = new BufferedImage(MAP_SIZE, MAP_SIZE, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D graphics = tile.createGraphics();
-                graphics.drawImage(image, offsetX - column * MAP_SIZE, offsetY - row * MAP_SIZE, null);
+                graphics.drawImage(canvas, -column * MAP_SIZE, -row * MAP_SIZE, null);
                 graphics.dispose();
                 tiles[row * columns + column] = tile;
             }
         }
         return new Poster(columns, rows, tiles);
+    }
+
+    /**
+     * Cuts the map colors of a padded canvas (see {@link #pad(BufferedImage)}) into one array per map,
+     * row by row starting at the top-left map.
+     */
+    public static byte[][] splitPixels(byte[] pixels, int canvasWidth, int canvasHeight) {
+        int columns = canvasWidth / MAP_SIZE;
+        int rows = canvasHeight / MAP_SIZE;
+        byte[][] tiles = new byte[columns * rows][];
+        for (int row = 0; row < rows; row++) {
+            for (int column = 0; column < columns; column++) {
+                byte[] tile = new byte[MAP_SIZE * MAP_SIZE];
+                for (int y = 0; y < MAP_SIZE; y++) {
+                    System.arraycopy(pixels, (row * MAP_SIZE + y) * canvasWidth + column * MAP_SIZE,
+                            tile, y * MAP_SIZE, MAP_SIZE);
+                }
+                tiles[row * columns + column] = tile;
+            }
+        }
+        return tiles;
     }
 }

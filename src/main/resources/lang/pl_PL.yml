@@ -1,6 +1,6 @@
-# ImageOnMapReborn – wiadomości po polsku.
-# Kolory: &a, &c... (oraz &#RRGGBB). Zmienne: {0}, {1}...
-# Brakujące klucze są brane z wersji wbudowanej w plugin.
+# ImageOnMapReborn – Polish messages.
+# Color codes: &a, &c... (and &#RRGGBB). Placeholders: {0}, {1}...
+# Keys missing from this file are taken from the version bundled with the plugin.
 
 general:
   no-permission: "&cNie możesz tego zrobić."
@@ -48,6 +48,11 @@ render:
   failed: "&cNie udało się utworzyć mapy: {0}"
   update-started: "&2Podmieniam obraz..."
   update-finished: "&2Na mapach jest już nowy obraz."
+  finished-animated: "&2Animowany obraz gotowy! &7(klatek: {0})"
+  update-finished-animated: "&2Na mapach jest już nowa animacja. &7(klatek: {0})"
+  animation-not-allowed: "&eNie możesz tworzyć animowanych map, więc użyto tylko pierwszej klatki GIF-a."
+  animation-too-big: "&eAnimacja na {0} × {1} map jest za duża (limit to {2} map), więc użyto tylko pierwszej klatki GIF-a."
+  animation-too-many-pixels: "&eGIF {0} × {1} px jest za duży na animację, więc użyto tylko jego pierwszej klatki."
 
 error:
   invalid-url: "ten link nie wygląda na poprawny."
@@ -78,12 +83,16 @@ splatter:
   no-permission: "&cNie możesz wieszać plakatów."
   not-enough-space: "&cTen plakat potrzebuje tutaj {0} × {1} pustych ramek."
 
+update:
+  available: "&eJest nowa wersja ImageOnMapReborn: &f{0}&e (na serwerze jest &f{1}&e)."
+  download: "&ePobierzesz ją tutaj: &f{0}"
+
 command:
   help:
     header: "&6ImageOnMapReborn &7v{0} &8– &7dostępne komendy:"
     entry: "&f{0} &8– &7{1}"
   new:
-    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [szerokość wysokość]"
+    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [szerokość wysokość] [dither|nodither]"
     description: "zamienia obraz z internetu na mapy"
     no-url: "&cPodaj link do obrazu."
     invalid-mode: "&cNieznany tryb. Wybierz resize, resize-stretched albo resize-covered."
@@ -128,7 +137,7 @@ command:
     prompt: "&eNapisz na czacie nową nazwę dla &6{0}&e albo &fanuluj&e, żeby zostawić starą."
     cancelled: "&7Nazwa została bez zmian."
   update:
-    usage: "/maptool update [gracz:]<nazwa mapy> <nowy link> [stretched|covered]"
+    usage: "/maptool update [gracz:]<nazwa mapy> <nowy link> [stretched|covered] [dither|nodither]"
     description: "rysuje inny obraz na tych samych mapach"
     invalid-mode: "&cNieznany tryb. Użyj stretched albo covered, albo nic, żeby zachować proporcje."
   delete:

@@ -20,6 +20,13 @@ tworzyć od nowa.
 Gotowy plik `.jar` jest w zakładce **Releases**; można też zbudować go samemu (sekcja
 [Budowanie ze źródeł](#budowanie-ze-źródeł)).
 
+### Nowości w 1.1.0
+
+- **Dithering** – zdjęcia i płynne przejścia kolorów wyglądają dużo lepiej (zobacz [Jakość obrazu](#jakość-obrazu-dithering)).
+- **Animowane GIF-y** – odtwarzają się na mapach, w ręce i w ramkach (zobacz [Animowane GIF-y](#animowane-gif-y)).
+- **Sprawdzanie aktualizacji** – konsola i OP-y dowiadują się o nowej wersji (można wyłączyć).
+- `config.yml` ma komentarze po angielsku, a po aktualizacji sam dostaje nowe opcje.
+
 ---
 
 ## Przejście ze starego ImageOnMap (krok po kroku)
@@ -28,7 +35,7 @@ Gotowy plik `.jar` jest w zakładce **Releases**; można też zbudować go samem
 2. Wyłącz serwer.
 3. Usuń **tylko plik** `plugins/ImageOnMap-x.x.x.jar`. **Folderu `plugins/ImageOnMap` nie usuwaj** –
    nowy plugin czyta z niego dane.
-4. Wrzuć `ImageOnMapReborn-1.0.0.jar` do `plugins/`.
+4. Wrzuć `ImageOnMapReborn-1.1.0.jar` do `plugins/`.
 5. Włącz serwer. W konsoli pojawi się:
    ```
    [ImageOnMapReborn] Found ImageOnMap data in plugins/ImageOnMap, importing it ...
@@ -56,13 +63,20 @@ pluginu, kopiując `maps/` i `images/` z powrotem.
 > Jeśli stary plugin jest nadal zainstalowany, ImageOnMapReborn wypisze w konsoli duże ostrzeżenie –
 > oba pluginy nie powinny działać jednocześnie.
 
+### Aktualizacja ImageOnMapReborn (np. 1.0.0 → 1.1.0)
+
+Wyłącz serwer, podmień stary plik `ImageOnMapReborn-x.x.x.jar` na nowy i włącz serwer. To wszystko: mapy,
+ustawienia i tłumaczenia zostają. Nowe opcje są dopisywane na końcu `config.yml` (konsola wypisze, które),
+a polskie komentarze z wersji 1.0.0 są zamieniane na angielskie – Twoje wartości i Twoje własne komentarze
+się nie zmieniają.
+
 ---
 
 ## Komendy
 
 | Komenda | Opis |
 |---|---|
-| `/tomap <link> [resize\|resize-stretched\|resize-covered] [szer. wys.]` | Tworzy mapy z obrazka. Bez trybu obraz ma oryginalny rozmiar i jest cięty na tyle map, ile trzeba (wyśrodkowany). `resize` = jedna mapa, `resize 4 3` = plakat 4×3 mapy (można też `4x3` lub `4*3`). |
+| `/tomap <link> [resize\|resize-stretched\|resize-covered] [szer. wys.] [dither\|nodither]` | Tworzy mapy z obrazka. Bez trybu obraz ma oryginalny rozmiar i jest cięty na tyle map, ile trzeba (wyśrodkowany). `resize` = jedna mapa, `resize 4 3` = plakat 4×3 mapy (można też `4x3` lub `4*3`). `dither` / `nodither` włącza albo wyłącza dithering dla tego obrazu. Animowane GIF-y stają się animowanymi mapami. |
 | `/maps [gracz]` | Menu z mapami (LPM – weź mapę, PPM – szczegóły: zmiana nazwy, usuwanie, pojedyncze części plakatu). Książka ze statystykami i limitami. |
 | `/givemap <gracz> [właściciel:]<nazwa>` | Daje mapę graczowi. Działa z konsoli i bloków poleceń (wtedy właściciel jest wymagany), obsługuje `@p`. |
 | `/maptool new …` | To samo co `/tomap`. |
@@ -72,7 +86,7 @@ pluginu, kopiując `maps/` i `images/` z powrotem.
 | `/maptool explore [gracz]` | To samo co `/maps`. |
 | `/maptool give …` | To samo co `/givemap`. |
 | `/maptool rename [gracz:]<nazwa> <nowa nazwa>` | Zmiana nazwy (nazwy ze spacjami w cudzysłowie). |
-| `/maptool update [gracz:]<nazwa> <nowy link> [stretched\|covered]` | Podmienia obraz na tych samych mapach (wiszące plakaty zmieniają się od razu). |
+| `/maptool update [gracz:]<nazwa> <nowy link> [stretched\|covered] [dither\|nodither]` | Podmienia obraz (albo animowany GIF) na tych samych mapach (wiszące plakaty zmieniają się od razu). |
 | `/maptool delete [gracz:]<nazwa>` | Usuwa obraz (z potwierdzeniem). |
 | `/maptool import [folder]` | Ponowny import ze starego ImageOnMap. |
 | `/maptool reload` | Przeładowanie `config.yml` i tłumaczeń. |
@@ -88,6 +102,37 @@ plakat zawiśnie naraz. Na podłodze i suficie obraz jest obrócony tak, żeby c
 stoisz. **Kucnij i uderz** dowolną część plakatu, żeby zdjąć go w całości i odzyskać mapę splatter.
 
 Ramki z obrazami są chronione przed mobami, strzałami i wybuchami – zdjąć mapę może tylko gracz.
+
+### Jakość obrazu (dithering)
+
+Mapy w Minecrafcie pokazują tylko ok. 200 kolorów. Bez ditheringu każdy piksel dostaje najbliższy z nich,
+przez co powstają płaskie plamy i widoczne pasy na niebie, twarzach i przejściach kolorów. Z ditheringiem
+plugin miesza dostępne kolory w drobne kropki, co z kilku bloków wygląda dużo bliżej oryginału.
+
+- `floyd-steinberg` (domyślnie) – najlepsza jakość zdjęć,
+- `ordered` – regularny wzór kropek (używany dla animowanych GIF-ów, bo nie migocze),
+- `none` – bez ditheringu, jak w starym ImageOnMap; najlepsze dla pixel artu, logo i napisów.
+
+Domyślną metodę serwera ustawia opcja `dithering` w `config.yml`; gracz może wybrać dla jednego obrazu,
+dopisując `dither` albo `nodither` do komendy, np. `/tomap https://example.com/logo.png resize nodither`.
+Obrazy utworzone przed 1.1.0 się nie zmieniają (żeby narysować je od nowa, użyj `/maptool update`).
+
+### Animowane GIF-y
+
+Animowany GIF podany w `/tomap` albo `/maptool update` staje się animowaną mapą albo plakatem: odtwarza się
+w ręce i w ramkach, wszystkie części plakatu są zsynchronizowane, a po restarcie serwera animacja działa dalej.
+
+- Animacja może mieć najwyżej `animated-gifs.max-maps` map (domyślnie 16, np. plakat 4×4) i
+  `animated-gifs.max-frames` klatek (100; dłuższe GIF-y pomijają część klatek, ale trwają tyle samo).
+  Większe GIF-y są używane jako zwykły obraz (pierwsza klatka), a gracz dostaje informację dlaczego.
+- Mapy w ramkach serwer normalnie odświeża tylko dwa razy na sekundę, więc plugin sam wysyła klatki
+  graczom stojącym przy ramce, najwyżej `animated-gifs.max-fps` razy na sekundę (10).
+- Klatki są trzymane w pamięci tylko wtedy, gdy ktoś patrzy na animację (16 KB na klatkę i mapę), a po
+  5 minutach bez widzów są zwalniane.
+- Uprawnienie `imageonmap.animated` (domyślnie mają je wszyscy) pozwala tworzyć animacje; bez niego GIF
+  staje się zwykłym obrazem. `animated-gifs.enabled: false` wyłącza animacje na całym serwerze.
+- Klatki są zapisywane w `images/map<id>.anim`. Plik `images/map<id>.png` zawiera pierwszą klatkę, więc
+  po ewentualnym powrocie do oryginalnego ImageOnMap mapy nadal pokazują obraz.
 
 ---
 
@@ -109,6 +154,7 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 | `imageonmap.removesplattermap` | wszyscy | Zdejmowanie całego plakatu (kucnij + uderz) |
 | `imageonmap.placeinvisiblesplattermap` | wszyscy | Ramki pod plakatem stają się niewidzialne |
 | `imageonmap.bypasswhitelist` | wszyscy | Pomija `images-hostnames-whitelist` (odbierz, żeby wymusić listę) |
+| `imageonmap.animated` | wszyscy | Animowane GIF-y stają się animowanymi mapami (nowe) |
 | `imageonmap.listother`, `imageonmap.exploreother` | OP | Podgląd map innych graczy |
 | `imageonmap.getother` | OP | Branie map innych graczy |
 | `imageonmap.renameother` | OP | Zmiana nazw map innych graczy (nowe) |
@@ -116,6 +162,7 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 | `imageonmap.updateother` | OP | `/maptool update` map innych graczy |
 | `imageonmap.give` | OP | `/givemap` |
 | `imageonmap.administrative` | OP | `/maptool import`, `/maptool reload` |
+| `imageonmap.notifyupdate` | OP | Informacja o nowej wersji pluginu przy wejściu na serwer (nowe) |
 | `imageonmap.bypasssize` | OP | Ignoruje `limit-map-size-x/y` |
 | `imageonmap.bypassmaplimit` | OP | Ignoruje `map-player-limit` i `imageonmap.maplimit.<n>` |
 | `imageonmap.bypassimagelimit` | OP | Ignoruje `imageonmap.imagelimit.<n>` |
@@ -139,8 +186,14 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 | `download.block-private-addresses` | `true` | Blokuje linki do sieci lokalnej (ochrona serwera) |
 | `max-image-pixels` | `40000000` | Ochrona pamięci RAM przed gigantycznymi obrazami |
 | `smooth-scaling` | `true` | Płynne zmniejszanie zdjęć (`false` = jak w starym pluginie) |
+| `dithering` | `floyd-steinberg` | `floyd-steinberg`, `ordered` albo `none` – zobacz [Jakość obrazu](#jakość-obrazu-dithering) |
+| `animated-gifs.enabled` | `true` | Animowane GIF-y odtwarzają się na mapach (`false` = tylko pierwsza klatka) |
+| `animated-gifs.max-frames` | `100` | Maks. liczba klatek jednej animacji |
+| `animated-gifs.max-maps` | `16` | Największa animacja, w mapach |
+| `animated-gifs.max-fps` | `10` | Maks. liczba zmian klatki na sekundę (1–20) |
 | `protect-item-frames` | `true` | Ochrona ramek z obrazami przed mobami i wybuchami |
 | `legacy-import.enabled` / `legacy-import.folder` | `true` / `ImageOnMap` | Automatyczny import starych danych |
+| `check-for-updates` | `true` | Sprawdza nową wersję na SpigotMC po starcie i co 12 godzin |
 
 Wszystkie teksty są w `plugins/ImageOnMapReborn/lang/pl_PL.yml` i `en_US.yml` – można je dowolnie
 zmieniać (kolory `&a`, `&#RRGGBB`), a nowy język dodać, kopiując plik jako np. `de_DE.yml`.
@@ -151,14 +204,16 @@ zmieniać (kolory `&a`, `&#RRGGBB`), a nowy język dodać, kopiując plik jako n
 
 - działa na 1.20.1 → 26.x (stary plugin oficjalnie kończył się na 1.18),
 - obsługa **WebP** (oprócz PNG, JPEG, GIF, BMP),
-- lepsza jakość zmniejszanych zdjęć,
+- **animowane GIF-y** na mapach i plakatach,
+- **dithering** i lepsza jakość zmniejszanych zdjęć,
 - pewniejsze wczytywanie obrazów po restarcie (stare wersje potrafiły pokazać pustą mapę, dopóki
   gracz nie zmienił slotu),
 - ochrona serwera: blokada linków do sieci lokalnej, limity rozmiaru pobierania i pamięci,
 - polskie tłumaczenie i edytowalne pliki językowe,
 - zmiana nazwy w GUI przez czat (zamiast tabliczki), uprawnienie `imageonmap.renameother`,
-- nie wysyła statystyk (bStats) i nie sprawdza aktualizacji – opcje `collect-data` i
-  `check-for-updates` ze starego configu są ignorowane.
+- nie wysyła statystyk (bStats) – opcja `collect-data` ze starego configu jest ignorowana. Sprawdzanie
+  aktualizacji tylko pyta SpigotMC (albo GitHub) o numer najnowszej wersji, nie wysyła żadnych danych
+  o serwerze, niczego samo nie pobiera i można je wyłączyć opcją `check-for-updates: false`.
 
 ---
 
@@ -170,9 +225,10 @@ Wymagane: JDK 17+ i Maven 3.9+.
 mvn package
 ```
 
-Wynik: `target/ImageOnMapReborn-1.0.0.jar` (zawiera bibliotekę TwelveMonkeys do WebP, przeniesioną
+Wynik: `target/ImageOnMapReborn-1.1.0.jar` (zawiera bibliotekę TwelveMonkeys do WebP, przeniesioną
 do pakietu `pl.iomreborn.lib`, więc nie koliduje z innymi pluginami). `mvn test` uruchamia testy
-jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, parser komend, dekodowanie).
+jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, parser komend, dekodowanie,
+dithering, klatki GIF-ów, pliki animacji, aktualizacja configu, sprawdzanie wersji).
 
 ---
 
@@ -180,7 +236,9 @@ jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, pa
 
 - **Autor projektu:** Optiblur – pomysł, wymagania, decyzje i testy.
 - **Testy:** oprócz testów jednostkowych plugin był uruchamiany na serwerach Paper 1.20.1, 1.21.11
-  i 26.3 (import starych danych, wyświetlanie map, komendy z konsoli).
+  i 26.3 (import starych danych, wyświetlanie map, komendy z konsoli, dithering, klatki GIF-ów,
+  aktualizacja configu). Dla 1.1.0 na serwer Paper 1.20.1 wchodził też testowy klient, który liczył
+  otrzymane aktualizacje map: animacje w ręce i w ramkach, zwykłe obrazy i powiadomienie o aktualizacji.
 - **ImageOnMap** – dziękujemy twórcom oryginału, na którym wzorowane są funkcje, komendy,
   uprawnienia i format danych: Moribus (2013), ProkopyL (2015), Amaury Carrade (2016–2021),
   Vlammar (2019–2021) i wszystkim współtwórcom z zespołu

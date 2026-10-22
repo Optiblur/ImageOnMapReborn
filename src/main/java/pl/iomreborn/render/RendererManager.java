@@ -17,9 +17,12 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitTask;
 import pl.iomreborn.ImageOnMapReborn;
+import pl.iomreborn.image.Animation;
 import pl.iomreborn.image.MapColors;
 import pl.iomreborn.item.MapItems;
 import pl.iomreborn.map.MapManager;
+import pl.iomreborn.storage.ImageStorage;
+import pl.iomreborn.util.Tasks;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ public final class RendererManager implements Listener {
 
     private final ImageOnMapReborn plugin;
     private final ExecutorService loader;
+    private final AnimationPlayer animations;
     private final Map<Integer, MapView> installed = new HashMap<>();
     private final Set<Integer> queued = new LinkedHashSet<>();
     private final Set<Integer> warnedMissing = ConcurrentHashMap.newKeySet();
@@ -55,16 +59,22 @@ public final class RendererManager implements Listener {
     public RendererManager(ImageOnMapReborn plugin) {
         this.plugin = plugin;
         this.loader = Executors.newFixedThreadPool(2, ImageOnMapReborn.threadFactory("ImageOnMapReborn-loader"));
+        this.animations = new AnimationPlayer(plugin);
     }
 
     private MapManager maps() {
         return plugin.mapManager();
     }
 
+    public AnimationPlayer animations() {
+        return animations;
+    }
+
     public void start() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         rescan(!Bukkit.getOnlinePlayers().isEmpty());
         sweepTask = Bukkit.getScheduler().runTaskTimer(plugin, this::sweepHands, 40L, 20L);
+        animations.start();
     }
 
     /** Looks for plugin maps in loaded item frames and in the inventories of online players. */
@@ -89,6 +99,7 @@ public final class RendererManager implements Listener {
             sweepTask.cancel();
             sweepTask = null;
         }
+        animations.shutdown();
         loader.shutdownNow();
         try {
             loader.awaitTermination(2, TimeUnit.SECONDS);
@@ -127,8 +138,17 @@ public final class RendererManager implements Listener {
     }
 
     /** Shows freshly rendered pixels on a map, installing the renderer if needed. */
-    @SuppressWarnings("deprecation")
     public void setPixels(int mapId, byte[] pixels) {
+        show(mapId, pixels);
+    }
+
+    /** Starts playing freshly rendered frames on a map, installing the renderer if needed. */
+    public void setAnimation(int mapId, Animation animation) {
+        show(mapId, animation);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void show(int mapId, Object content) {
         MapView view = Bukkit.getMap(mapId);
         if (view == null) {
             plugin.getLogger().warning("Minecraft map #" + mapId + " does not exist, cannot display its image.");
@@ -136,10 +156,11 @@ public final class RendererManager implements Listener {
         }
         ImageMapRenderer renderer = findOurRenderer(view);
         if (renderer != null) {
-            renderer.offer(pixels);
+            renderer.offer(content);
+            renderer.applyPendingNow();
             installed.put(mapId, view);
         } else {
-            install(view, pixels);
+            install(view, content);
         }
     }
 
@@ -156,14 +177,14 @@ public final class RendererManager implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    private void install(MapView view, byte[] pixels) {
+    private void install(MapView view, Object content) {
         for (MapRenderer renderer : new ArrayList<>(view.getRenderers())) {
             view.removeRenderer(renderer);
         }
-        ImageMapRenderer renderer = new ImageMapRenderer(this, view.getId(), pixels);
+        ImageMapRenderer renderer = new ImageMapRenderer(this, view.getId(), content);
         view.addRenderer(renderer);
         installed.put(view.getId(), view);
-        if (pixels == null && renderer.claimLoad()) {
+        if (content == null && renderer.claimLoad()) {
             load(renderer);
         }
     }
@@ -177,20 +198,32 @@ public final class RendererManager implements Listener {
         return null;
     }
 
-    private static void removeOurRenderers(MapView view) {
+    private void removeOurRenderers(MapView view) {
         for (MapRenderer renderer : new ArrayList<>(view.getRenderers())) {
-            if (renderer instanceof ImageMapRenderer) {
+            if (renderer instanceof ImageMapRenderer ours) {
+                if (ours.getManager() == this) {
+                    animations.stopped(ours);
+                }
                 view.removeRenderer(renderer);
             }
         }
     }
 
-    /** Reads the image file of a renderer in the background (retrying, as the file may be locked briefly). */
+    /**
+     * Reads the image files of a renderer in the background (retrying, as a file may be locked briefly):
+     * the frames of an animated map, or else its picture.
+     */
     void load(ImageMapRenderer renderer) {
         try {
             loader.execute(() -> {
                 int id = renderer.getMapId();
                 int version = renderer.version();
+                Animation animation = readAnimation(id);
+                if (animation != null) {
+                    renderer.offerLoaded(animation, version);
+                    Tasks.sync(renderer::applyPendingNow);
+                    return;
+                }
                 for (int attempt = 1; ; attempt++) {
                     try {
                         BufferedImage image = plugin.imageStorage().read(id);
@@ -203,6 +236,7 @@ public final class RendererManager implements Listener {
                             return;
                         }
                         renderer.offerLoaded(MapColors.toMapBytes(image), version);
+                        Tasks.sync(renderer::applyPendingNow);
                         return;
                     } catch (Exception ex) {
                         if (attempt >= 3) {
@@ -221,6 +255,32 @@ public final class RendererManager implements Listener {
             });
         } catch (RejectedExecutionException ignored) {
             // shutting down
+        }
+    }
+
+    /** The frames of an animated map, or null if it is not animated (or its frame file is unreadable). */
+    private Animation readAnimation(int mapId) {
+        for (int attempt = 1; ; attempt++) {
+            try {
+                return plugin.imageStorage().readAnimation(mapId);
+            } catch (java.nio.file.FileSystemException ex) {
+                if (attempt >= 3) {
+                    plugin.getLogger().log(Level.WARNING, "Cannot read the frames of Minecraft map #" + mapId, ex);
+                    return null;
+                }
+                try {
+                    Thread.sleep(250L * attempt);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    return null;
+                }
+            } catch (Exception ex) {
+                if (warnedMissing.add(mapId)) {
+                    plugin.getLogger().log(Level.WARNING, "The frame file images/map" + mapId
+                            + ImageStorage.ANIMATION_EXTENSION + " is damaged, showing its still picture instead.", ex);
+                }
+                return null;
+            }
         }
     }
 

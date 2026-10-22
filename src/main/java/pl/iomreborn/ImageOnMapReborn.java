@@ -1,6 +1,7 @@
 package pl.iomreborn;
 
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -19,6 +20,7 @@ import pl.iomreborn.command.sub.NewCommand;
 import pl.iomreborn.command.sub.ReloadCommand;
 import pl.iomreborn.command.sub.RenameCommand;
 import pl.iomreborn.command.sub.UpdateCommand;
+import pl.iomreborn.config.ConfigUpdater;
 import pl.iomreborn.config.PluginConfig;
 import pl.iomreborn.gui.GuiListener;
 import pl.iomreborn.i18n.Messages;
@@ -35,10 +37,15 @@ import pl.iomreborn.render.RendererManager;
 import pl.iomreborn.storage.ImageStorage;
 import pl.iomreborn.storage.LegacyImporter;
 import pl.iomreborn.storage.MapStorage;
+import pl.iomreborn.update.UpdateChecker;
 import pl.iomreborn.util.Tasks;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,11 +72,13 @@ public final class ImageOnMapReborn extends JavaPlugin {
     private PosterPlacement posterPlacement;
     private ChatPrompts chatPrompts;
     private GuiListener guiListener;
+    private UpdateChecker updateChecker;
 
     @Override
     public void onEnable() {
         Tasks.init(this);
         saveDefaultConfig();
+        upgradeConfigFiles();
         messages = new Messages(this);
         reloadSettings();
 
@@ -111,6 +120,8 @@ public final class ImageOnMapReborn extends JavaPlugin {
         rendererManager.start();
         registerCommands();
         warnAboutOriginalPlugin();
+        updateChecker = new UpdateChecker(this, getDescription().getVersion());
+        updateChecker.applySettings();
 
         getLogger().info("Loaded " + mapManager.getTotalImageCount() + " images using "
                 + mapManager.getTotalMapCount() + " Minecraft maps (" + mapManager.getStores().size() + " players).");
@@ -118,6 +129,9 @@ public final class ImageOnMapReborn extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (updateChecker != null) {
+            updateChecker.shutdown();
+        }
         if (guiListener != null) {
             guiListener.closeAll();
         }
@@ -157,6 +171,57 @@ public final class ImageOnMapReborn extends JavaPlugin {
         reloadConfig();
         settings = PluginConfig.from(getConfig());
         messages.load(settings.lang(), settings.perPlayerLanguage());
+        if (updateChecker != null) {
+            updateChecker.applySettings();
+        }
+    }
+
+    /**
+     * Brings files written by older versions up to date: the options added by newer versions are appended to
+     * config.yml (with their comments), so admins who update the plugin can see and change them, and the Polish
+     * comments of version 1.0.0 become English. Existing values and the admin's own comments are not touched.
+     */
+    private void upgradeConfigFiles() {
+        File file = new File(getDataFolder(), "config.yml");
+        try (InputStream in = getResource("config.yml")) {
+            if (in == null || !file.isFile()) {
+                return;
+            }
+            String bundled = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            String original = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            String text = ConfigUpdater.translateComments(original, ConfigUpdater.OLD_CONFIG_COMMENTS);
+            YamlConfiguration current = new YamlConfiguration();
+            current.loadFromString(text);
+            List<String> added = new ArrayList<>();
+            String missing = ConfigUpdater.missingOptions(bundled, key -> current.contains(key, true), added);
+            if (!missing.isEmpty()) {
+                if (!text.isEmpty() && !text.endsWith("\n")) {
+                    text += "\n";
+                }
+                text += text.contains("\r\n") ? missing.replace("\n", "\r\n") : missing;
+            }
+            if (!text.equals(original)) {
+                MapStorage.writeAtomic(file, text);
+            }
+            if (!added.isEmpty()) {
+                getLogger().info("Added new options to config.yml: " + String.join(", ", added) + ".");
+            }
+        } catch (Exception ex) {
+            getLogger().log(Level.WARNING, "Cannot add the new options to config.yml (defaults are used)", ex);
+        }
+
+        File polish = new File(new File(getDataFolder(), "lang"), "pl_PL.yml");
+        try {
+            if (polish.isFile()) {
+                String original = Files.readString(polish.toPath(), StandardCharsets.UTF_8);
+                String text = ConfigUpdater.translateComments(original, ConfigUpdater.OLD_POLISH_LANG_COMMENTS);
+                if (!text.equals(original)) {
+                    MapStorage.writeAtomic(polish, text);
+                }
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Cannot update the comments of lang/pl_PL.yml", ex);
+        }
     }
 
     private void registerCommands() {
@@ -305,5 +370,9 @@ public final class ImageOnMapReborn extends JavaPlugin {
 
     public GuiListener guiListener() {
         return guiListener;
+    }
+
+    public UpdateChecker updateChecker() {
+        return updateChecker;
     }
 }

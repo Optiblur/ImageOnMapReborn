@@ -1,63 +1,95 @@
-#  ImageOnMapReborn – konfiguracja / configuration
-#  Opcje wspólne z ImageOnMap mają te same nazwy i przy pierwszym uruchomieniu
-#  są kopiowane z plugins/ImageOnMap/config.yml.
+# ImageOnMapReborn – configuration
+# Options shared with ImageOnMap have the same names and are copied from
+# plugins/ImageOnMap/config.yml on the first start.
 
-# Język pluginu: pl-PL lub en-US. Pusty = język systemu.
-# Pliki tłumaczeń są w plugins/ImageOnMapReborn/lang/ i można je edytować
-# (albo dodać nowy język, np. de_DE.yml).
+# Language of the plugin: pl-PL or en-US. Empty = the language of the system.
+# The translation files are in plugins/ImageOnMapReborn/lang/ and can be edited
+# (or add a new language, e.g. de_DE.yml).
 lang: pl-PL
 
-# true = wiadomości i GUI w języku klienta gracza (jeśli jest takie tłumaczenie),
-# false = zawsze język z opcji "lang".
+# true = messages and menus in the language of each player's game (if it is translated),
+# false = always the language of the "lang" option.
 per-player-language: false
 
-# Każdy obraz zużywa mapy Minecrafta (ID). Limit liczby map na cały serwer
-# i na jednego gracza. 0 = bez limitu.
-# Limit można też dać uprawnieniem: imageonmap.maplimit.<liczba> i imageonmap.imagelimit.<liczba>.
+# Every image uses Minecraft maps (map IDs). Limit of maps for the whole server
+# and for each player. 0 = no limit.
+# Limits can also be given with permissions: imageonmap.maplimit.<number> and imageonmap.imagelimit.<number>.
 map-global-limit: 0
 map-player-limit: 0
 
-# Maksymalny rozmiar obrazka źródłowego w pikselach. 0 = bez limitu.
+# Maximum size of the source picture, in pixels. 0 = no limit.
 limit-map-size-x: 0
 limit-map-size-y: 0
 
-# Czy zapisywać też pełny obraz (images/_<pierwsza>-<ostatnia>.png).
+# Also save the full picture (images/_<first>-<last>.png).
 save-full-image: false
 
-# Lista dozwolonych stron z obrazkami. Pusta = wszystkie.
-# Uwaga: jak w ImageOnMap, uprawnienie imageonmap.bypasswhitelist (domyślnie dla wszystkich)
-# pomija tę listę – żeby ją wymusić, odbierz to uprawnienie (np. w LuckPerms ustaw false).
-# Można użyć *.domena.pl dla wszystkich subdomen.
+# Websites pictures may come from. Empty = all of them.
+# Note: like in ImageOnMap, the imageonmap.bypasswhitelist permission (everyone has it by default)
+# skips this list – to enforce the list, take that permission away (e.g. set it to false in LuckPerms).
+# Use *.example.com for all subdomains.
 # images-hostnames-whitelist:
 #   - i.imgur.com
 #   - cdn.discordapp.com
 images-hostnames-whitelist: []
 
 download:
-  # Limit czasu połączenia i odczytu (sekundy).
+  # Time limit for connecting and for reading (seconds).
   timeout-seconds: 20
-  # Maksymalny rozmiar pobieranego pliku (MB).
+  # Maximum size of a downloaded file (MB).
   max-size-mb: 25
-  # Blokuje linki do adresów w sieci lokalnej (127.0.0.1, 192.168.x.x itd.),
-  # żeby gracze nie mogli przez serwer odpytywać wewnętrznych usług.
+  # Blocks links to local network addresses (127.0.0.1, 192.168.x.x and so on),
+  # so players cannot use the server to reach internal services.
   block-private-addresses: true
   user-agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36 ImageOnMapReborn"
 
-# Maksymalna liczba pikseli obrazu (szerokość x wysokość) – chroni RAM serwera.
-# 40 000 000 to ok. 6300 x 6300 px. Dotyczy też docelowego rozmiaru plakatu.
+# Maximum number of pixels of a picture (width x height) – protects the server's RAM.
+# 40 000 000 is about 6300 x 6300 px. It also applies to the size of a poster.
 max-image-pixels: 40000000
 
-# true = płynne skalowanie przy zmniejszaniu (lepsze zdjęcia),
-# false = skalowanie "piksel w piksel" jak w starym ImageOnMap.
+# true = smooth scaling when shrinking (better photos),
+# false = "pixel by pixel" scaling like the old ImageOnMap.
 smooth-scaling: true
 
-# Chroni ramki z obrazami przed mobami, strzałami i wybuchami
-# (zdjąć mapę może tylko gracz).
+# Dithering: maps only have about 200 colors. Instead of rounding every pixel to the
+# closest one, the plugin mixes the available colors in tiny dots, so photos and
+# smooth color gradients look much better.
+#   floyd-steinberg – the best quality for photos
+#   ordered         – a regular pattern of dots
+#   none            – no dithering, like the old ImageOnMap (best for pixel art and logos)
+# Players can change it for one picture by adding "dither" or "nodither" to the command,
+# e.g. /tomap <link> resize nodither
+# Animated GIFs use "ordered" instead of floyd-steinberg, because it does not flicker.
+dithering: floyd-steinberg
+
+# Animated GIFs.
+animated-gifs:
+  # true = animated GIFs play on maps (in hands and in item frames),
+  # false = only their first frame is used, like in the old ImageOnMap.
+  # Making animations needs the imageonmap.animated permission (everyone has it by default).
+  enabled: true
+  # Maximum number of frames. Longer GIFs are shortened by skipping some frames
+  # (the animation lasts as long, but is less smooth).
+  max-frames: 100
+  # Largest animation, in maps, e.g. 16 = a 4×4 poster. Bigger GIFs only get their first
+  # frame. Each frame of one map takes 16 KB of RAM while someone is looking at it.
+  max-maps: 16
+  # Most frame changes per second (1-20). 20 = the smoothest, but players standing near
+  # item frames with animations receive twice as much data as with 10.
+  max-fps: 10
+
+# Protects item frames holding pictures from mobs, arrows and explosions
+# (only players can take a map down).
 protect-item-frames: true
 
 legacy-import:
-  # Automatyczny jednorazowy import danych ze starego ImageOnMap przy pierwszym starcie.
-  # Po imporcie powstaje plik legacy-import.yml. Ponowny import: /maptool import
+  # One-time automatic import of the old ImageOnMap data on the first start.
+  # It creates the legacy-import.yml file. To import again: /maptool import
   enabled: true
-  # Nazwa folderu starego pluginu w katalogu plugins/.
+  # Name of the old plugin's folder in plugins/.
   folder: ImageOnMap
+
+# Checks whether a new version of the plugin is out (on SpigotMC) when the server starts and
+# then every 12 hours. Nothing is downloaded or installed by itself. A new version is announced
+# in the console and to players with the imageonmap.notifyupdate permission (OPs by default).
+check-for-updates: true

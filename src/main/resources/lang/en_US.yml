@@ -48,6 +48,11 @@ render:
   failed: "&cCould not create the map: {0}"
   update-started: "&2Replacing the picture..."
   update-finished: "&2The new picture is now shown on the maps."
+  finished-animated: "&2Your animated image is ready! &7({0} frames)"
+  update-finished-animated: "&2The new animation now plays on the maps. &7({0} frames)"
+  animation-not-allowed: "&eYou can't make animated maps, so only the first frame of the GIF is used."
+  animation-too-big: "&eAn animation of {0} × {1} maps is too big (the limit is {2} maps), so only the first frame of the GIF is used."
+  animation-too-many-pixels: "&eA {0} × {1} px GIF is too large to animate, so only its first frame is used."
 
 error:
   invalid-url: "that link doesn't look valid."
@@ -78,12 +83,16 @@ splatter:
   no-permission: "&cYou can't hang posters."
   not-enough-space: "&cThis poster needs {0} × {1} empty item frames here."
 
+update:
+  available: "&eA new version of ImageOnMapReborn is out: &f{0}&e (this server has &f{1}&e)."
+  download: "&eDownload it here: &f{0}"
+
 command:
   help:
     header: "&6ImageOnMapReborn &7v{0} &8– &7available commands:"
     entry: "&f{0} &8– &7{1}"
   new:
-    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [width height]"
+    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [width height] [dither|nodither]"
     description: "turns a picture from the web into maps"
     no-url: "&cPlease give the link of a picture."
     invalid-mode: "&cUnknown mode. Pick resize, resize-stretched or resize-covered."
@@ -126,7 +135,7 @@ command:
     prompt: "&eWrite the new name for &6{0}&e in the chat, or &fcancel&e to keep it."
     cancelled: "&7The name was not changed."
   update:
-    usage: "/maptool update [player:]<map name> <new link> [stretched|covered]"
+    usage: "/maptool update [player:]<map name> <new link> [stretched|covered] [dither|nodither]"
     description: "draws a different picture on the same maps"
     invalid-mode: "&cUnknown mode. Use stretched or covered, or nothing to keep the proportions."
   delete:

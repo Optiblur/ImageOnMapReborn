@@ -152,6 +152,7 @@ public final class LegacyImporter {
         changed |= copy(old, "limit-map-size-x", config, "limit-map-size-x");
         changed |= copy(old, "limit-map-size-y", config, "limit-map-size-y");
         changed |= copy(old, "save-full-image", config, "save-full-image");
+        changed |= copy(old, "check-for-updates", config, "check-for-updates");
         List<String> whitelist = old.getStringList("images-hostnames-whitelist");
         if (!whitelist.isEmpty()) {
             config.set("images-hostnames-whitelist", whitelist);

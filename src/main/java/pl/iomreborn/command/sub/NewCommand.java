@@ -5,17 +5,23 @@ import org.bukkit.entity.Player;
 import pl.iomreborn.ImageOnMapReborn;
 import pl.iomreborn.Perm;
 import pl.iomreborn.command.SubCommand;
+import pl.iomreborn.image.Dithering;
 import pl.iomreborn.image.ScalingMode;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-/** /tomap and /maptool new: {@code <URL> [resize|resize-stretched|resize-covered] [width height | WxH]}. */
+/**
+ * /tomap and /maptool new: {@code <URL> [resize|resize-stretched|resize-covered] [width height | WxH]
+ * [dither|nodither]}. The dithering word may be anywhere after the URL.
+ */
 public final class NewCommand extends SubCommand {
 
     private static final List<String> MODES = List.of("resize", "resize-stretched", "resize-covered");
+    static final List<String> DITHER_WORDS = List.of("dither", "nodither");
 
     public NewCommand(ImageOnMapReborn plugin) {
         super(plugin, "new");
@@ -26,12 +32,32 @@ public final class NewCommand extends SubCommand {
         return Perm.NEW.has(sender);
     }
 
+    /** The arguments without the dithering word, and that word as TRUE/FALSE (null when absent). */
+    record Options(String[] args, Boolean dither) {
+    }
+
+    static Options extractDithering(String[] args) {
+        List<String> rest = new ArrayList<>(args.length);
+        Boolean dither = null;
+        for (int i = 0; i < args.length; i++) {
+            Boolean word = i == 0 ? null : Dithering.parseCommandWord(args[i]);
+            if (word != null) {
+                dither = word;
+            } else {
+                rest.add(args[i]);
+            }
+        }
+        return new Options(rest.toArray(new String[0]), dither);
+    }
+
     @Override
-    public void execute(CommandSender sender, String label, String[] args) {
+    public void execute(CommandSender sender, String label, String[] rawArgs) {
         Player player = requirePlayer(sender);
         if (player == null) {
             return;
         }
+        Options options = extractDithering(rawArgs);
+        String[] args = options.args();
         if (args.length < 1) {
             messages().send(sender, "command.new.no-url");
             usage(sender);
@@ -61,7 +87,7 @@ public final class NewCommand extends SubCommand {
                 height = size[1];
             }
         }
-        plugin.renderService().create(player, args[0], mode, width, height);
+        plugin.renderService().create(player, args[0], mode, width, height, options.dither());
     }
 
     /** Accepts "4 3", "4x3" and "4*3"; "0 0" means a single map. Returns null when invalid. */
@@ -94,17 +120,34 @@ public final class NewCommand extends SubCommand {
 
     @Override
     public List<String> complete(CommandSender sender, String[] args) {
-        switch (args.length) {
-            case 1:
-                return args[0].isEmpty() ? List.of("https://") : Collections.emptyList();
-            case 2:
-                return filter(MODES, args[1]);
-            case 3:
-                return filter(List.of("1", "2", "3", "4", "2x2", "3x2", "4x3"), args[2]);
-            case 4:
-                return filter(List.of("1", "2", "3", "4"), args[3]);
-            default:
-                return Collections.emptyList();
+        if (args.length <= 1) {
+            return args.length == 1 && args[0].isEmpty() ? List.of("https://") : Collections.emptyList();
         }
+        // Earlier words decide what comes next; a dithering word may be given anywhere after the link.
+        String[] before = new String[args.length - 1];
+        System.arraycopy(args, 0, before, 0, before.length);
+        Options options = extractDithering(before);
+        String last = args[args.length - 1];
+        List<String> suggestions = new ArrayList<>();
+        switch (options.args().length) {
+            case 1:
+                suggestions.addAll(MODES);
+                break;
+            case 2:
+                suggestions.addAll(List.of("1", "2", "3", "4", "2x2", "3x2", "4x3"));
+                break;
+            case 3:
+                if (!options.args()[2].matches("\\d+")) {
+                    break;
+                }
+                suggestions.addAll(List.of("1", "2", "3", "4"));
+                break;
+            default:
+                break;
+        }
+        if (options.dither() == null) {
+            suggestions.addAll(DITHER_WORDS);
+        }
+        return filter(suggestions, last);
     }
 }
