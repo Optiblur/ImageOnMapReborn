@@ -235,7 +235,7 @@ animation files, config updates, update check).
 
 ## Authors and credits
 
-- **Project author:** optiblur – idea, requirements, decisions and testing.
+- **Project author:** Optiblur – idea, requirements, decisions and testing.
 - **Testing:** besides the unit tests, the plugin was run on Paper 1.20.1, 1.21.11 and 26.3 servers
   (old data import, map display, console commands, dithering, GIF frames, config update). For 1.1.0 a
   test client also joined a Paper 1.20.1 server and counted the map updates it received: animations in the
