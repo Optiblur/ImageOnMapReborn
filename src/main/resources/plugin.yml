@@ -3,7 +3,7 @@ version: '${project.version}'
 main: pl.iomreborn.ImageOnMapReborn
 api-version: '1.20'
 description: Load pictures from the Internet onto maps. Unofficial successor of ImageOnMap for 1.20.1+, reads its data.
-authors: [optiblur]
+authors: [Optiblur]
 softdepend: [ImageOnMap]
 
 commands:
