@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * /tomap and /maptool new: {@code <URL> [resize|resize-stretched|resize-covered] [width height | WxH]
+ * /tomap and /maptool new: {@code <URL | file:name> [resize|resize-stretched|resize-covered] [width height | WxH]
  * [dither|nodither]}. The dithering word may be anywhere after the URL.
  */
 public final class NewCommand extends SubCommand {
@@ -121,7 +121,17 @@ public final class NewCommand extends SubCommand {
     @Override
     public List<String> complete(CommandSender sender, String[] args) {
         if (args.length <= 1) {
-            return args.length == 1 && args[0].isEmpty() ? List.of("https://") : Collections.emptyList();
+            if (args.length == 0) {
+                return Collections.emptyList();
+            }
+            List<String> sources = new ArrayList<>();
+            if (args[0].isEmpty()) {
+                sources.add("https://");
+            }
+            if (Perm.LOCAL_FILES.has(sender)) {
+                sources.addAll(plugin.localImages().suggestions());
+            }
+            return filter(sources, args[0]);
         }
         // Earlier words decide what comes next; a dithering word may be given anywhere after the link.
         String[] before = new String[args.length - 1];

@@ -36,7 +36,9 @@ public enum Perm {
     /** New in ImageOnMapReborn: animated GIFs become animated maps. */
     ANIMATED("imageonmap.animated"),
     /** New in ImageOnMapReborn: told about new plugin versions on join. */
-    NOTIFY_UPDATE("imageonmap.notifyupdate");
+    NOTIFY_UPDATE("imageonmap.notifyupdate"),
+    /** New in ImageOnMapReborn: pictures from the upload folder ({@code /tomap file:<name>}). */
+    LOCAL_FILES("imageonmap.localfiles");
 
     /** {@code imageonmap.maplimit.<n>}: maximum number of Minecraft maps a player may use. */
     public static final String MAP_LIMIT_PREFIX = "imageonmap.maplimit.";

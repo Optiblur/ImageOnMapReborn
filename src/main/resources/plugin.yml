@@ -9,7 +9,7 @@ softdepend: [ImageOnMap]
 commands:
   tomap:
     description: Render an image from the Internet onto map(s).
-    usage: /<command> <URL> [resize|resize-stretched|resize-covered] [width height] [dither|nodither]
+    usage: /<command> <URL|file:name> [resize|resize-stretched|resize-covered] [width height] [dither|nodither]
   maps:
     description: Open the GUI listing your maps.
     usage: /<command> [player]
@@ -17,7 +17,7 @@ commands:
     description: Give a map from a player's maps to a player.
     usage: /<command> <player> [owner:]<map name>
   maptool:
-    description: Manage the maps (new, list, get, getremaining, explore, give, rename, update, delete, import, reload).
+    description: Manage the maps (new, list, get, getremaining, explore, give, rename, update, delete, import, reload, info).
     usage: /<command> help
 
 # Same permission nodes as ImageOnMap, so existing permission setups keep working.
@@ -95,7 +95,7 @@ permissions:
     description: Item frames of a placed splatter map become invisible.
     default: true
   imageonmap.administrative:
-    description: Administrative commands (/maptool import, /maptool reload).
+    description: Administrative commands (/maptool import, /maptool reload, /maptool info).
     default: op
   imageonmap.bypasssize:
     description: Ignore limit-map-size-x / limit-map-size-y.
@@ -114,4 +114,7 @@ permissions:
     default: true
   imageonmap.notifyupdate:
     description: Be told about new versions of the plugin when joining.
+    default: op
+  imageonmap.localfiles:
+    description: Use pictures from plugins/ImageOnMapReborn/upload/ (/tomap file:<name>, /maptool update <map> file:<name>).
     default: op

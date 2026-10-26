@@ -156,6 +156,23 @@ class ConfigUpdaterTest {
     }
 
     @Test
+    void theLanguageCommentOfVersion110IsUpdatedButTheChosenLanguageStays() throws Exception {
+        String old = "# Language of the plugin: pl-PL or en-US. Empty = the language of the system.\nlang: pl-PL\n";
+        String translated = ConfigUpdater.translateComments(old, ConfigUpdater.OLD_CONFIG_COMMENTS);
+        String comment = translated.lines().findFirst().orElseThrow();
+        assertTrue(comment.contains("en-US (English)"), comment);
+        assertTrue(bundled().contains(comment), "the comment is the one of the new config.yml");
+        assertTrue(translated.contains("lang: pl-PL"), "servers that run in Polish keep Polish");
+    }
+
+    @Test
+    void newServersStartInEnglish() throws Exception {
+        YamlConfiguration config = new YamlConfiguration();
+        config.loadFromString(bundled());
+        assertEquals("en-US", config.getString("lang"));
+    }
+
+    @Test
     void handlesWindowsLineEndings() {
         String text = "# a\r\nfirst: 1\r\n\r\n# b\r\nsecond:\r\n  nested: 2\r\n";
         List<ConfigUpdater.Block> blocks = ConfigUpdater.blocks(text);

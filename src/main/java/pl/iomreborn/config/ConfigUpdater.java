@@ -74,9 +74,13 @@ public final class ConfigUpdater {
         return false;
     }
 
+    private static final String LANG_COMMENT =
+            "Language of the plugin: en-US (English) or pl-PL (Polish). Empty = the language of the system.";
+
     /**
-     * The comments of the config.yml written by version 1.0.0 (Polish) and their English text, so old files get
-     * the same English comments as new ones. Keys and values are the text after {@code #}.
+     * Comments of config.yml files written by older versions (the Polish ones of 1.0.0, and English ones that have
+     * changed since) and their current text, so old files get the same comments as new ones. Keys and values are
+     * the text after {@code #}.
      */
     public static final Map<String, String> OLD_CONFIG_COMMENTS = Map.ofEntries(
             Map.entry("ImageOnMapReborn – konfiguracja / configuration", "ImageOnMapReborn – configuration"),
@@ -84,8 +88,8 @@ public final class ConfigUpdater {
                     "Options shared with ImageOnMap have the same names and are copied from"),
             Map.entry("są kopiowane z plugins/ImageOnMap/config.yml.",
                     "plugins/ImageOnMap/config.yml on the first start."),
-            Map.entry("Język pluginu: pl-PL lub en-US. Pusty = język systemu.",
-                    "Language of the plugin: pl-PL or en-US. Empty = the language of the system."),
+            Map.entry("Język pluginu: pl-PL lub en-US. Pusty = język systemu.", LANG_COMMENT),
+            Map.entry("Language of the plugin: pl-PL or en-US. Empty = the language of the system.", LANG_COMMENT),
             Map.entry("Pliki tłumaczeń są w plugins/ImageOnMapReborn/lang/ i można je edytować",
                     "The translation files are in plugins/ImageOnMapReborn/lang/ and can be edited"),
             Map.entry("(albo dodać nowy język, np. de_DE.yml).", "(or add a new language, e.g. de_DE.yml)."),

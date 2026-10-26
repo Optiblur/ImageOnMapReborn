@@ -2,10 +2,10 @@
 # Options shared with ImageOnMap have the same names and are copied from
 # plugins/ImageOnMap/config.yml on the first start.
 
-# Language of the plugin: pl-PL or en-US. Empty = the language of the system.
+# Language of the plugin: en-US (English) or pl-PL (Polish). Empty = the language of the system.
 # The translation files are in plugins/ImageOnMapReborn/lang/ and can be edited
 # (or add a new language, e.g. de_DE.yml).
-lang: pl-PL
+lang: en-US
 
 # true = messages and menus in the language of each player's game (if it is translated),
 # false = always the language of the "lang" option.

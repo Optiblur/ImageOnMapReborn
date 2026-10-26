@@ -73,6 +73,23 @@ class UpdateCheckerTest {
     }
 
     @Test
+    void reportsTheStatusForMaptoolInfo() {
+        UpdateChecker.Release v120 = new UpdateChecker.Release("1.2.0", "x");
+        UpdateChecker.Release v130 = new UpdateChecker.Release("1.3.0", "y");
+        assertEquals(UpdateChecker.Status.UNKNOWN, UpdateChecker.status("1.2.0", null, null));
+        assertEquals(UpdateChecker.Status.LATEST, UpdateChecker.status("1.2.0", v120, null));
+        assertEquals(UpdateChecker.Status.NEWER_BUILD, UpdateChecker.status("1.3.0", v120, null));
+        assertEquals(UpdateChecker.Status.UPDATE, UpdateChecker.status("1.2.0", v130, v130));
+    }
+
+    @Test
+    void tellsWhetherTheRunningVersionIsTheLatest() {
+        assertEquals("You are running the latest version (1.2.0).", UpdateChecker.statusLine("1.2.0", "1.2.0"));
+        assertEquals("This build (1.3.0) is newer than the latest release (1.2.0).",
+                UpdateChecker.statusLine("1.3.0", "1.2.0"));
+    }
+
+    @Test
     void onlyNewerVersionsAreAnnounced() {
         assertTrue(UpdateChecker.isUpdate(new UpdateChecker.Release("1.2.0", "x"), "1.1.0"));
         assertFalse(UpdateChecker.isUpdate(new UpdateChecker.Release("1.1.0", "x"), "1.1.0"));

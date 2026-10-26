@@ -1,6 +1,7 @@
 package pl.iomreborn.update;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 import pl.iomreborn.ImageOnMapReborn;
 import pl.iomreborn.Perm;
+import pl.iomreborn.util.ConsoleBox;
 import pl.iomreborn.util.Tasks;
 
 import java.io.ByteArrayOutputStream;
@@ -49,6 +51,20 @@ public final class UpdateChecker implements Listener {
     public record Release(String version, String url) {
     }
 
+    /** What is known about the latest version, for /maptool info. */
+    public enum Status {
+        /** check-for-updates is false. */
+        OFF,
+        /** No check has worked yet. */
+        UNKNOWN,
+        /** The running version is the latest one. */
+        LATEST,
+        /** The running version is newer than the latest release (a test build). */
+        NEWER_BUILD,
+        /** A newer version is out. */
+        UPDATE
+    }
+
     /** Somewhere the latest version can be read from. */
     @FunctionalInterface
     public interface Source {
@@ -60,7 +76,9 @@ public final class UpdateChecker implements Listener {
     private final String currentVersion;
     private final List<Source> sources;
     private volatile Release available;
+    private volatile Release latestSeen;
     private volatile boolean failureLogged;
+    private volatile boolean statusReported;
     private BukkitTask task;
     private boolean listening;
 
@@ -95,6 +113,7 @@ public final class UpdateChecker implements Listener {
             task.cancel();
             task = null;
             available = null;
+            latestSeen = null;
         }
     }
 
@@ -114,12 +133,55 @@ public final class UpdateChecker implements Listener {
         return available;
     }
 
+    /**
+     * What the checks found so far: the status, the latest release seen (null if no check worked) and the newer
+     * release (null if there is none), read together so they match.
+     */
+    public record Snapshot(Status status, Release latest, Release newer) {
+    }
+
+    public Snapshot snapshot() {
+        Release seen = latestSeen;
+        Release newer = available;
+        Status status = plugin.settings().checkForUpdates() ? status(currentVersion, seen, newer) : Status.OFF;
+        return new Snapshot(status, seen, newer);
+    }
+
+    static Status status(String currentVersion, Release latestSeen, Release available) {
+        if (available != null) {
+            return Status.UPDATE;
+        }
+        if (latestSeen == null) {
+            return Status.UNKNOWN;
+        }
+        return Version.isNewer(currentVersion, latestSeen.version()) ? Status.NEWER_BUILD : Status.LATEST;
+    }
+
+    /** The status in a few English words, for the console. */
+    public String describe() {
+        Snapshot now = snapshot();
+        return switch (now.status()) {
+            case OFF -> ChatColor.GRAY + "off (check-for-updates: false)";
+            case UNKNOWN -> ChatColor.GRAY + "not checked yet";
+            case LATEST -> ChatColor.GREEN + "up to date";
+            case NEWER_BUILD -> ChatColor.GREEN + "newer than the latest release (" + now.latest().version() + ")";
+            case UPDATE -> ChatColor.YELLOW + now.newer().version() + " is out: "
+                    + ChatColor.AQUA + now.newer().url();
+        };
+    }
+
     /** Asks the sources in turn for the latest version. Blocks: never call it on the main thread. */
     void checkNow() {
         Release release = latest(sources);
         if (release != null) {
             failureLogged = false;
-            handle(release);
+            latestSeen = release;
+            if (!handle(release) && !statusReported) {
+                statusReported = true;
+                String status = statusLine(currentVersion, release.version());
+                Tasks.sync(() -> Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GRAY + "["
+                        + ChatColor.AQUA + "ImageOnMapReborn" + ChatColor.DARK_GRAY + "] " + ChatColor.GREEN + status));
+            }
         } else if (!failureLogged) {
             failureLogged = true;
             plugin.getLogger().info("Could not check for a new version (no answer from SpigotMC or GitHub).");
@@ -139,6 +201,14 @@ public final class UpdateChecker implements Listener {
             }
         }
         return null;
+    }
+
+    /** What the console is told after the first check when there is no newer version. */
+    static String statusLine(String currentVersion, String latestVersion) {
+        if (Version.isNewer(currentVersion, latestVersion)) {
+            return "This build (" + currentVersion + ") is newer than the latest release (" + latestVersion + ").";
+        }
+        return "You are running the latest version (" + currentVersion + ").";
     }
 
     /** True if the release is a valid version newer than the running one. */
@@ -165,8 +235,13 @@ public final class UpdateChecker implements Listener {
     }
 
     private void announce(Release release) {
-        plugin.getLogger().info("A new version of ImageOnMapReborn is available: " + release.version()
-                + " (this server runs " + currentVersion + "). Download: " + release.url());
+        new ConsoleBox()
+                .line(ChatColor.YELLOW + "A new version of ImageOnMapReborn is out!")
+                .separator()
+                .row("Installed", currentVersion)
+                .row("Latest", ChatColor.GREEN + release.version())
+                .row("Download", ChatColor.AQUA + release.url())
+                .print();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Perm.NOTIFY_UPDATE.has(player)) {
                 tell(player, release);

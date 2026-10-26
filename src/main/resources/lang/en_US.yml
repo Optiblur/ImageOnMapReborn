@@ -78,6 +78,10 @@ error:
   save-failed: "the picture could not be written to the server's disk."
   out-of-memory: "the server ran out of memory with this picture."
   internal: "an unexpected error happened, see the console."
+  invalid-file-name: "give the name of a PNG, JPEG, GIF, BMP or WebP picture from the upload folder, e.g. file:logo.png."
+  file-not-found: "there is no picture called {0} in the upload folder."
+  file-unreadable: "the picture {0} could not be read."
+  file-not-allowed: "you are not allowed to use pictures from the server's upload folder."
 
 splatter:
   no-permission: "&cYou can't hang posters."
@@ -92,7 +96,7 @@ command:
     header: "&6ImageOnMapReborn &7v{0} &8– &7available commands:"
     entry: "&f{0} &8– &7{1}"
   new:
-    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [width height] [dither|nodither]"
+    usage: "/tomap <link|file:name> [resize|resize-stretched|resize-covered] [width height] [dither|nodither]"
     description: "turns a picture from the web into maps"
     no-url: "&cPlease give the link of a picture."
     invalid-mode: "&cUnknown mode. Pick resize, resize-stretched or resize-covered."
@@ -135,7 +139,7 @@ command:
     prompt: "&eWrite the new name for &6{0}&e in the chat, or &fcancel&e to keep it."
     cancelled: "&7The name was not changed."
   update:
-    usage: "/maptool update [player:]<map name> <new link> [stretched|covered] [dither|nodither]"
+    usage: "/maptool update [player:]<map name> <new link|file:name> [stretched|covered] [dither|nodither]"
     description: "draws a different picture on the same maps"
     invalid-mode: "&cUnknown mode. Use stretched or covered, or nothing to keep the proportions."
   delete:
@@ -156,6 +160,20 @@ command:
     usage: "/maptool reload"
     description: "reloads config.yml and the messages"
     done: "&aSettings and messages reloaded."
+  info:
+    usage: "/maptool info"
+    description: "shows the version, the update status and statistics"
+    header: "&8&m        &r &bImageOnMap&3Reborn &f{0} &8&m        "
+    author: "&7Author: &f{0}"
+    images: "&7Images: &f{0} &7(maps: {1}, players: {2})"
+    uploads: "&7Pictures in the upload folder: &f{0} &8(/tomap file:<name>)"
+    language: "&7Language: &f{0}"
+    server: "&7Server: &f{0}"
+    update-off: "&7Updates: &8the check is turned off"
+    update-unknown: "&7Updates: &8not checked yet"
+    update-latest: "&7Updates: &aup to date"
+    update-newer: "&7Updates: &athis build is newer than the latest release ({0})"
+    update-available: "&7Updates: &eversion &f{0}&e is out &8- &f{1}"
 
 gui:
   list:

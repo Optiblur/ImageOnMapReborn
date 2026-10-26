@@ -158,7 +158,7 @@ public final class LegacyImporter {
             config.set("images-hostnames-whitelist", whitelist);
             changed = true;
         }
-        // "lang" is not copied: ImageOnMap had no Polish translation, this plugin defaults to pl-PL.
+        // "lang" is not copied: this plugin keeps its own language setting (en-US by default).
         if (changed) {
             plugin.saveConfig();
             plugin.reloadSettings();

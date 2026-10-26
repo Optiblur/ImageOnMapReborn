@@ -19,6 +19,19 @@ class ArgParserTest {
     }
 
     @Test
+    void filePicturesStayWholeOnlyWhereAPictureIsExpected() {
+        String[] args = "\"My poster\" file:event/day1.png covered".split(" ");
+        ArgParser.Parsed withPictures = ArgParser.parseWithImageSources(args);
+        assertEquals(List.of("My poster", "file:event/day1.png", "covered"), values(withPictures));
+        assertTrue(ArgParser.isImageSource(withPictures.get(1).value()));
+
+        // Elsewhere "file:name" still means the map "name" of a player called "file".
+        ArgParser.Parsed plain = parse("file:Logo");
+        assertEquals(List.of("file", "Logo"), values(plain));
+        assertTrue(plain.get(0).qualifier());
+    }
+
+    @Test
     void quotedNames() {
         ArgParser.Parsed parsed = parse("Vlammar \"A very cool map name\"");
         assertEquals(List.of("Vlammar", "A very cool map name"), values(parsed));

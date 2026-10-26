@@ -78,6 +78,10 @@ error:
   save-failed: "nie udało się zapisać obrazu na dysku serwera."
   out-of-memory: "serwerowi zabrakło pamięci przy tym obrazie."
   internal: "wystąpił nieoczekiwany błąd, szczegóły są w konsoli."
+  invalid-file-name: "podaj nazwę obrazu PNG, JPEG, GIF, BMP lub WebP z folderu upload, np. file:logo.png."
+  file-not-found: "w folderze upload nie ma obrazu o nazwie {0}."
+  file-unreadable: "nie udało się odczytać obrazu {0}."
+  file-not-allowed: "nie możesz używać obrazów z folderu upload na serwerze."
 
 splatter:
   no-permission: "&cNie możesz wieszać plakatów."
@@ -92,7 +96,7 @@ command:
     header: "&6ImageOnMapReborn &7v{0} &8– &7dostępne komendy:"
     entry: "&f{0} &8– &7{1}"
   new:
-    usage: "/tomap <link> [resize|resize-stretched|resize-covered] [szerokość wysokość] [dither|nodither]"
+    usage: "/tomap <link|file:nazwa> [resize|resize-stretched|resize-covered] [szerokość wysokość] [dither|nodither]"
     description: "zamienia obraz z internetu na mapy"
     no-url: "&cPodaj link do obrazu."
     invalid-mode: "&cNieznany tryb. Wybierz resize, resize-stretched albo resize-covered."
@@ -137,7 +141,7 @@ command:
     prompt: "&eNapisz na czacie nową nazwę dla &6{0}&e albo &fanuluj&e, żeby zostawić starą."
     cancelled: "&7Nazwa została bez zmian."
   update:
-    usage: "/maptool update [gracz:]<nazwa mapy> <nowy link> [stretched|covered] [dither|nodither]"
+    usage: "/maptool update [gracz:]<nazwa mapy> <nowy link|file:nazwa> [stretched|covered] [dither|nodither]"
     description: "rysuje inny obraz na tych samych mapach"
     invalid-mode: "&cNieznany tryb. Użyj stretched albo covered, albo nic, żeby zachować proporcje."
   delete:
@@ -158,6 +162,20 @@ command:
     usage: "/maptool reload"
     description: "przeładowuje config.yml i wiadomości"
     done: "&aPrzeładowano ustawienia i wiadomości."
+  info:
+    usage: "/maptool info"
+    description: "pokazuje wersję, stan aktualizacji i statystyki"
+    header: "&8&m        &r &bImageOnMap&3Reborn &f{0} &8&m        "
+    author: "&7Autor: &f{0}"
+    images: "&7Obrazy: &f{0} &7(map: {1}, graczy: {2})"
+    uploads: "&7Obrazy w folderze upload: &f{0} &8(/tomap file:<nazwa>)"
+    language: "&7Język: &f{0}"
+    server: "&7Serwer: &f{0}"
+    update-off: "&7Aktualizacje: &8sprawdzanie jest wyłączone"
+    update-unknown: "&7Aktualizacje: &8jeszcze nie sprawdzono"
+    update-latest: "&7Aktualizacje: &amasz najnowszą wersję"
+    update-newer: "&7Aktualizacje: &ata wersja jest nowsza niż ostatnie wydanie ({0})"
+    update-available: "&7Aktualizacje: &ejest wersja &f{0} &8- &f{1}"
 
 gui:
   list:

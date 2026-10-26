@@ -1,5 +1,7 @@
 package pl.iomreborn.command;
 
+import pl.iomreborn.image.LocalImages;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,7 +59,24 @@ public final class ArgParser {
         return lower.startsWith("http://") || lower.startsWith("https://");
     }
 
+    /** A link or a {@code file:<name>} picture of the upload folder. */
+    public static boolean isImageSource(String value) {
+        return isUrl(value) || LocalImages.isReference(value);
+    }
+
     public static Parsed parse(String[] args) {
+        return parse(args, false);
+    }
+
+    /**
+     * Like {@link #parse(String[])}, but {@code file:<name>} arguments are kept whole instead of being read as
+     * the map {@code <name>} of a player called "file". For commands that take a picture.
+     */
+    public static Parsed parseWithImageSources(String[] args) {
+        return parse(args, true);
+    }
+
+    private static Parsed parse(String[] args, boolean imageSources) {
         List<Token> tokens = new ArrayList<>();
         Set<String> flags = new HashSet<>();
         StringBuilder current = new StringBuilder();
@@ -66,7 +85,7 @@ public final class ArgParser {
 
         for (String arg : args) {
             if (!inQuotes && current.length() == 0 && !quoted) {
-                if (isUrl(arg)) {
+                if (imageSources ? isImageSource(arg) : isUrl(arg)) {
                     tokens.add(new Token(arg, false, false));
                     continue;
                 }

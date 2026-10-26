@@ -6,14 +6,16 @@ import pl.iomreborn.Perm;
 import pl.iomreborn.command.ArgParser;
 import pl.iomreborn.command.SubCommand;
 import pl.iomreborn.image.Dithering;
+import pl.iomreborn.image.LocalImages;
 import pl.iomreborn.image.ScalingMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * /maptool update [player:]<map name> <new URL> [stretched|covered] [dither|nodither]:
+ * /maptool update [player:]<map name> <new URL | file:name> [stretched|covered] [dither|nodither]:
  * new picture on the same maps.
  */
 public final class UpdateCommand extends SubCommand {
@@ -29,10 +31,10 @@ public final class UpdateCommand extends SubCommand {
 
     @Override
     public void execute(CommandSender sender, String label, String[] args) {
-        ArgParser.Parsed parsed = ArgParser.parse(args);
+        ArgParser.Parsed parsed = ArgParser.parseWithImageSources(args);
         int urlIndex = -1;
         for (int i = 0; i < parsed.size(); i++) {
-            if (!parsed.get(i).quoted() && ArgParser.isUrl(parsed.get(i).value())) {
+            if (!parsed.get(i).quoted() && ArgParser.isImageSource(parsed.get(i).value())) {
                 urlIndex = i;
                 break;
             }
@@ -78,13 +80,18 @@ public final class UpdateCommand extends SubCommand {
         }
         int urlIndex = -1;
         for (int i = 0; i < args.length - 1; i++) {
-            if (ArgParser.isUrl(args[i])) {
+            if (ArgParser.isImageSource(args[i])) {
                 urlIndex = i;
                 break;
             }
         }
         if (urlIndex < 0) {
-            return Collections.emptyList();
+            // Still typing the map name or the picture: offer the pictures of the upload folder.
+            String last = args[args.length - 1];
+            boolean typingFile = LocalImages.isReference(last)
+                    || (!last.isEmpty() && LocalImages.PREFIX.startsWith(last.toLowerCase(Locale.ROOT)));
+            return typingFile && Perm.LOCAL_FILES.has(sender)
+                    ? filter(plugin.localImages().suggestions(), last) : Collections.emptyList();
         }
         boolean modeGiven = false;
         boolean ditherGiven = false;

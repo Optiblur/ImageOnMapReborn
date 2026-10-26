@@ -1,5 +1,7 @@
 package pl.iomreborn;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,6 +17,7 @@ import pl.iomreborn.command.sub.GetCommand;
 import pl.iomreborn.command.sub.GetRemainingCommand;
 import pl.iomreborn.command.sub.GiveCommand;
 import pl.iomreborn.command.sub.ImportCommand;
+import pl.iomreborn.command.sub.InfoCommand;
 import pl.iomreborn.command.sub.ListCommand;
 import pl.iomreborn.command.sub.NewCommand;
 import pl.iomreborn.command.sub.ReloadCommand;
@@ -24,6 +27,7 @@ import pl.iomreborn.config.ConfigUpdater;
 import pl.iomreborn.config.PluginConfig;
 import pl.iomreborn.gui.GuiListener;
 import pl.iomreborn.i18n.Messages;
+import pl.iomreborn.image.LocalImages;
 import pl.iomreborn.image.MapColors;
 import pl.iomreborn.image.RenderService;
 import pl.iomreborn.item.MapItems;
@@ -38,6 +42,7 @@ import pl.iomreborn.storage.ImageStorage;
 import pl.iomreborn.storage.LegacyImporter;
 import pl.iomreborn.storage.MapStorage;
 import pl.iomreborn.update.UpdateChecker;
+import pl.iomreborn.util.ConsoleBox;
 import pl.iomreborn.util.Tasks;
 
 import java.io.File;
@@ -63,6 +68,7 @@ public final class ImageOnMapReborn extends JavaPlugin {
     private ExecutorService workExecutor;
     private ExecutorService ioExecutor;
     private ImageStorage imageStorage;
+    private LocalImages localImages;
     private MapManager mapManager;
     private LegacyImporter legacyImporter;
     private RendererManager rendererManager;
@@ -89,6 +95,9 @@ public final class ImageOnMapReborn extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        localImages = new LocalImages(new File(getDataFolder(), "upload"));
+        createUploadFolder(localImages.folder());
 
         workExecutor = Executors.newFixedThreadPool(2, threadFactory("ImageOnMapReborn-worker"));
         ioExecutor = Executors.newSingleThreadExecutor(threadFactory("ImageOnMapReborn-io"));
@@ -122,9 +131,46 @@ public final class ImageOnMapReborn extends JavaPlugin {
         warnAboutOriginalPlugin();
         updateChecker = new UpdateChecker(this, getDescription().getVersion());
         updateChecker.applySettings();
+        printStartupBanner();
+    }
 
-        getLogger().info("Loaded " + mapManager.getTotalImageCount() + " images using "
-                + mapManager.getTotalMapCount() + " Minecraft maps (" + mapManager.getStores().size() + " players).");
+    /** The summary printed in the console when the plugin has started. */
+    private void printStartupBanner() {
+        summary(settings.checkForUpdates()
+                ? "checking SpigotMC for a new version..."
+                : updateChecker.describe()).print();
+    }
+
+    /** The plugin at a glance, for the console (at startup and with /maptool info). */
+    public ConsoleBox summary(String updates) {
+        String language = messages.serverLocale() + (settings.perPlayerLanguage() ? " (or each player's own)" : "");
+        int uploads = localImages.names().size();
+        return new ConsoleBox()
+                .line(ChatColor.AQUA + "ImageOnMap" + ChatColor.DARK_AQUA + "Reborn " + ChatColor.WHITE
+                        + getDescription().getVersion() + ChatColor.GRAY + "  by "
+                        + String.join(", ", getDescription().getAuthors()))
+                .line(ChatColor.GRAY + "Pictures on maps - the successor of ImageOnMap")
+                .separator()
+                .row("Images", mapManager.getTotalImageCount() + ChatColor.GRAY.toString() + " ("
+                        + count(mapManager.getTotalMapCount(), "map") + ", "
+                        + count(mapManager.getStores().size(), "player") + ")")
+                .row("Uploads", uploads + ChatColor.GRAY.toString() + (uploads == 1 ? " picture" : " pictures")
+                        + " in upload/ (/tomap file:<name>)")
+                .row("Language", language)
+                .row("Server", serverName())
+                .row("Updates", updates);
+    }
+
+    /** "1 map", "5 maps". */
+    private static String count(int number, String noun) {
+        return number + " " + noun + (number == 1 ? "" : "s");
+    }
+
+    /** For example "Paper 1.21.11". */
+    public static String serverName() {
+        String version = Bukkit.getBukkitVersion();
+        int suffix = version.indexOf("-R");
+        return Bukkit.getName() + " " + (suffix > 0 ? version.substring(0, suffix) : version);
     }
 
     @Override
@@ -236,7 +282,8 @@ public final class ImageOnMapReborn extends JavaPlugin {
                 new UpdateCommand(this),
                 new DeleteCommand(this),
                 new ImportCommand(this),
-                new ReloadCommand(this));
+                new ReloadCommand(this),
+                new InfoCommand(this));
         CommandRouter maptool = CommandRouter.of(this, subcommands);
         bind("maptool", maptool);
         bind("tomap", CommandRouter.direct(this, maptool.get("new")));
@@ -267,6 +314,32 @@ public final class ImageOnMapReborn extends JavaPlugin {
 
     private static boolean directory(File dir) {
         return dir.isDirectory() || dir.mkdirs();
+    }
+
+    /** Creates the folder for /tomap file:<name>, with a short note for the admins the first time. */
+    private void createUploadFolder(File folder) {
+        if (folder.isDirectory()) {
+            return;
+        }
+        if (!folder.mkdirs()) {
+            getLogger().warning("Cannot create " + folder + "; /tomap file:<name> will not find any picture.");
+            return;
+        }
+        String note = String.join(System.lineSeparator(),
+                "Put pictures (PNG, JPEG, GIF, BMP or WebP) in this folder to use them without uploading them",
+                "to a website first:",
+                "",
+                "    /tomap file:logo.png [resize 4 3]",
+                "    /maptool update <map name> file:logo.png",
+                "",
+                "Subfolders work too (file:event/day1.png). File names must not contain spaces.",
+                "Players need the imageonmap.localfiles permission (OPs have it by default).",
+                "");
+        try {
+            Files.writeString(new File(folder, "README.txt").toPath(), note, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Cannot write " + folder + "/README.txt", ex);
+        }
     }
 
     public static ThreadFactory threadFactory(String name) {
@@ -334,6 +407,10 @@ public final class ImageOnMapReborn extends JavaPlugin {
 
     public ImageStorage imageStorage() {
         return imageStorage;
+    }
+
+    public LocalImages localImages() {
+        return localImages;
     }
 
     public MapManager mapManager() {

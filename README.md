@@ -20,6 +20,31 @@ be created again.
 The ready-to-use `.jar` is in the **Releases** tab; you can also build it yourself (see
 [Building from source](#building-from-source)).
 
+### New in 1.2.0
+
+- **English by default** – new installations start in English, Polish is one option away (`lang: pl-PL`).
+  Servers that already run the plugin keep the language they have.
+- **Startup summary in the console** – version, number of pictures, the upload folder, language, server and
+  the update check at a glance:
+  ```
+  +------------------------------------------------------+
+  | ImageOnMapReborn 1.2.0  by Optiblur                  |
+  | Pictures on maps - the successor of ImageOnMap       |
+  +------------------------------------------------------+
+  | Images    12 (48 maps, 3 players)                    |
+  | Uploads   2 pictures in upload/ (/tomap file:<name>) |
+  | Language  en_US                                      |
+  | Server    Paper 1.21.11                              |
+  | Updates   checking SpigotMC for a new version...     |
+  +------------------------------------------------------+
+  ```
+  A few seconds later the console says whether you run the latest version, or shows a box with the new
+  version and its download link.
+- **Pictures from the server's disk** – put a picture in `plugins/ImageOnMapReborn/upload/` and use
+  `/tomap file:logo.png`, no need to upload it to a website first (see
+  [Pictures from the server's disk](#pictures-from-the-servers-disk)).
+- **`/maptool info`** – version, update status and statistics, in the game or in the console.
+
 ### New in 1.1.0
 
 - **Dithering** – photos and color gradients look much better (see [Picture quality](#picture-quality-dithering)).
@@ -35,7 +60,7 @@ The ready-to-use `.jar` is in the **Releases** tab; you can also build it yourse
 2. Stop the server.
 3. Delete **only the file** `plugins/ImageOnMap-x.x.x.jar`. **Do not delete the `plugins/ImageOnMap`
    folder** – the new plugin reads its data from there.
-4. Put `ImageOnMapReborn-1.1.0.jar` into `plugins/`.
+4. Put `ImageOnMapReborn-1.2.0.jar` into `plugins/`.
 5. Start the server. The console will show:
    ```
    [ImageOnMapReborn] Found ImageOnMap data in plugins/ImageOnMap, importing it ...
@@ -63,12 +88,13 @@ copying `maps/` and `images/` back.
 > If the old plugin is still installed, ImageOnMapReborn prints a big warning in the console – both
 > plugins should not run at the same time.
 
-### Updating ImageOnMapReborn (e.g. 1.0.0 → 1.1.0)
+### Updating ImageOnMapReborn (e.g. 1.1.0 → 1.2.0)
 
 Stop the server, replace the old `ImageOnMapReborn-x.x.x.jar` with the new one and start the server. That's
 all: maps, settings and translations stay. New options are added at the end of `config.yml` (the console
 lists them), and the Polish comments written by 1.0.0 are replaced with English ones – your values and your
-own comments are not changed.
+own comments are not changed. The language you use stays as well: a server that ran in Polish keeps
+`lang: pl-PL`, only new installations start in English.
 
 ---
 
@@ -76,7 +102,7 @@ own comments are not changed.
 
 | Command | Description |
 |---|---|
-| `/tomap <link> [resize\|resize-stretched\|resize-covered] [width height] [dither\|nodither]` | Creates maps from a picture. Without a mode the picture keeps its size and is cut into as many maps as needed (centered). `resize` = one map, `resize 4 3` = a 4×3 map poster (`4x3` or `4*3` work too). `dither` / `nodither` turns dithering on or off for this picture. Animated GIFs become animated maps. |
+| `/tomap <link\|file:name> [resize\|resize-stretched\|resize-covered] [width height] [dither\|nodither]` | Creates maps from a picture. Without a mode the picture keeps its size and is cut into as many maps as needed (centered). `resize` = one map, `resize 4 3` = a 4×3 map poster (`4x3` or `4*3` work too). `dither` / `nodither` turns dithering on or off for this picture. Animated GIFs become animated maps. `file:<name>` takes a picture from the upload folder (see [Pictures from the server's disk](#pictures-from-the-servers-disk)). |
 | `/maps [player]` | Map browser (left-click – take a map, right-click – details: rename, delete, single poster pieces). A book shows statistics and limits. |
 | `/givemap <player> [owner:]<name>` | Gives a map to a player. Works from the console and command blocks (the owner is then required), supports `@p`. |
 | `/maptool new …` | Same as `/tomap`. |
@@ -86,13 +112,30 @@ own comments are not changed.
 | `/maptool explore [player]` | Same as `/maps`. |
 | `/maptool give …` | Same as `/givemap`. |
 | `/maptool rename [player:]<name> <new name>` | Renames a picture (names with spaces go in quotes). |
-| `/maptool update [player:]<name> <new link> [stretched\|covered] [dither\|nodither]` | Draws a new picture (or an animated GIF) on the same maps (posters already hanging change right away). |
+| `/maptool update [player:]<name> <new link\|file:name> [stretched\|covered] [dither\|nodither]` | Draws a new picture (or an animated GIF) on the same maps (posters already hanging change right away). |
 | `/maptool delete [player:]<name>` | Deletes a picture (asks for confirmation). |
 | `/maptool import [folder]` | Imports from the old ImageOnMap again. |
 | `/maptool reload` | Reloads `config.yml` and the translations. |
+| `/maptool info` | Version, update status and statistics (alias `version`). In the console it is the same framed summary as at startup. |
 
 Map names with spaces: `"A very nice map"`, another player's map: `Player:"A very nice map"` –
 exactly like in ImageOnMap.
+
+### Pictures from the server's disk
+
+Instead of a link, `/tomap` and `/maptool update` can take a picture from the
+`plugins/ImageOnMapReborn/upload/` folder (it is created on the first start):
+
+```
+/tomap file:logo.png resize 4 3
+/maptool update "Spawn sign" file:event/day1.png
+```
+
+- PNG, JPEG, GIF (also animated), BMP and WebP work; subfolders are written with `/`.
+- File names must not contain spaces. Tab completion lists the pictures of the folder.
+- Only files inside the upload folder can be used (`file:../something` is refused).
+- Players need the `imageonmap.localfiles` permission (OPs have it by default). The website whitelist does
+  not apply, the size limits (`max-image-pixels`, `limit-map-size-x/y`, `download.max-size-mb`) do.
 
 ### Splatter maps (posters)
 
@@ -162,8 +205,9 @@ permissions (`…other`), `give` and the administrative ones are for OPs only.
 | `imageonmap.deleteother` | OP | Deleting other players' maps |
 | `imageonmap.updateother` | OP | `/maptool update` on other players' maps |
 | `imageonmap.give` | OP | `/givemap` |
-| `imageonmap.administrative` | OP | `/maptool import`, `/maptool reload` |
+| `imageonmap.administrative` | OP | `/maptool import`, `/maptool reload`, `/maptool info` |
 | `imageonmap.notifyupdate` | OP | Told about a new plugin version when joining (new) |
+| `imageonmap.localfiles` | OP | Pictures from the upload folder: `/tomap file:<name>` (new) |
 | `imageonmap.bypasssize` | OP | Ignores `limit-map-size-x/y` |
 | `imageonmap.bypassmaplimit` | OP | Ignores `map-player-limit` and `imageonmap.maplimit.<n>` |
 | `imageonmap.bypassimagelimit` | OP | Ignores `imageonmap.imagelimit.<n>` |
@@ -176,7 +220,7 @@ permissions (`…other`), `give` and the administrative ones are for OPs only.
 
 | Option | Default | Description |
 |---|---|---|
-| `lang` | `pl-PL` | Language (`pl-PL`, `en-US`; empty = system language). **Set `en-US` for English.** |
+| `lang` | `en-US` | Language (`en-US`, `pl-PL`; empty = system language). **Set `pl-PL` for Polish.** |
 | `per-player-language` | `false` | Messages in each player's client language |
 | `map-global-limit` / `map-player-limit` | `0` | Map limit for the server / per player (0 = no limit) |
 | `limit-map-size-x` / `limit-map-size-y` | `0` | Maximum picture size in pixels |
@@ -226,10 +270,10 @@ Requirements: JDK 17+ and Maven 3.9+.
 mvn package
 ```
 
-Result: `target/ImageOnMapReborn-1.1.0.jar` (it contains the TwelveMonkeys library for WebP, moved to
+Result: `target/ImageOnMapReborn-1.2.0.jar` (it contains the TwelveMonkeys library for WebP, moved to
 the `pl.iomreborn.lib` package so it cannot clash with other plugins). `mvn test` runs the unit tests
 (ImageOnMap data format, picture cutting, poster geometry, command parser, decoding, dithering, GIF frames,
-animation files, config updates, update check).
+animation files, config updates, update check, console box, upload folder).
 
 ---
 

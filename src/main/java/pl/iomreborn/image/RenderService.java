@@ -19,6 +19,7 @@ import pl.iomreborn.util.Tasks;
 import pl.iomreborn.util.Text;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +36,9 @@ import java.util.function.Function;
 import java.util.logging.Level;
 
 /**
- * Turns an image URL into maps: download, decode, scale and convert colors in the background,
- * then allocate Minecraft maps and register the image on the main thread. Animated GIFs become animated maps.
+ * Turns an image URL (or a picture of the upload folder) into maps: download, decode, scale and convert colors in
+ * the background, then allocate Minecraft maps and register the image on the main thread. Animated GIFs become
+ * animated maps.
  */
 public final class RenderService {
 
@@ -85,6 +87,12 @@ public final class RenderService {
         void run() throws Exception;
     }
 
+    /** Reads the bytes of the picture (in the background). */
+    @FunctionalInterface
+    private interface Source {
+        byte[] read() throws RenderException;
+    }
+
     @FunctionalInterface
     interface MapCountCheck {
         void check(int maps) throws Exception;
@@ -103,16 +111,16 @@ public final class RenderService {
             return;
         }
         LimitContext limits = LimitContext.of(player);
+        PluginConfig config = plugin.settings();
+        Source picture;
         try {
-            ImageDownloader.parseUrl(url);
+            picture = source(player, url, config);
             plugin.mapManager().checkCreateLimits(uuid, 1, limits);
         } catch (RenderException ex) {
             sendFailure(player, ex);
             return;
         }
 
-        PluginConfig config = plugin.settings();
-        ImageDownloader.Request request = request(url, config, !Perm.BYPASS_WHITELIST.has(player));
         boolean bypassSize = Perm.BYPASS_SIZE.has(player);
         Dithering dithering = Dithering.choose(ditherRequest, config.dithering());
         AnimationPolicy policy = animationPolicy(player, config);
@@ -121,7 +129,7 @@ public final class RenderService {
         startActionBar(player, "render.started");
 
         submit(requester, () -> {
-            byte[] data = ImageDownloader.download(request);
+            byte[] data = picture.read();
             ImageDecoder.SizeCheck sizeCheck = (w, h) -> checkSourceSize(w, h, bypassSize, config);
             List<Note> notes = new ArrayList<>();
             Prepared prepared = null;
@@ -150,20 +158,20 @@ public final class RenderService {
             plugin.messages().send(sender, "render.busy");
             return;
         }
+        PluginConfig config = plugin.settings();
+        Source picture;
         try {
-            ImageDownloader.parseUrl(url);
+            picture = source(sender, url, config);
         } catch (RenderException ex) {
             sendFailure(sender, ex);
             return;
         }
 
-        PluginConfig config = plugin.settings();
         ScalingMode scaling = mode == null || mode == ScalingMode.NONE ? ScalingMode.CONTAINED : mode;
         int columns = map instanceof PosterMap poster ? poster.layoutColumns() : 1;
         int rows = map instanceof PosterMap poster ? poster.layoutRows() : 1;
         int[] mapIds = map.getMapIds();
         boolean isPlayer = sender instanceof Player;
-        ImageDownloader.Request request = request(url, config, isPlayer && !Perm.BYPASS_WHITELIST.has(sender));
         boolean bypassSize = !isPlayer || Perm.BYPASS_SIZE.has(sender);
         Dithering dithering = Dithering.choose(ditherRequest, config.dithering());
         AnimationPolicy policy = animationPolicy(sender, config);
@@ -173,7 +181,7 @@ public final class RenderService {
             startActionBar((Player) sender, "render.update-started");
         }
         submit(requester, () -> {
-            byte[] data = ImageDownloader.download(request);
+            byte[] data = picture.read();
             ImageDecoder.SizeCheck sizeCheck = (w, h) -> checkSourceSize(w, h, bypassSize, config);
             Function<BufferedImage, BufferedImage> resize = image -> ImageProcessing.resize(image,
                     columns * ImageProcessing.MAP_SIZE, rows * ImageProcessing.MAP_SIZE, scaling, config.smoothScaling());
@@ -201,6 +209,25 @@ public final class RenderService {
         }
         return !(sender instanceof Player) || Perm.ANIMATED.has(sender)
                 ? AnimationPolicy.ALLOWED : AnimationPolicy.NOT_ALLOWED;
+    }
+
+    /**
+     * Where the picture comes from: the upload folder for {@code file:<name>} (players need
+     * {@code imageonmap.localfiles}), otherwise the Internet. Checked on the main thread, read in the background.
+     */
+    private Source source(CommandSender sender, String reference, PluginConfig config) throws RenderException {
+        long maxBytes = config.maxDownloadMegabytes() * 1024L * 1024L;
+        if (LocalImages.isReference(reference)) {
+            if (sender instanceof Player && !Perm.LOCAL_FILES.has(sender)) {
+                throw new RenderException("error.file-not-allowed");
+            }
+            File file = plugin.localImages().resolve(reference);
+            return () -> LocalImages.read(file, maxBytes);
+        }
+        ImageDownloader.parseUrl(reference);
+        boolean enforceWhitelist = sender instanceof Player && !Perm.BYPASS_WHITELIST.has(sender);
+        ImageDownloader.Request request = request(reference, config, enforceWhitelist);
+        return () -> ImageDownloader.download(request);
     }
 
     private static ImageDownloader.Request request(String url, PluginConfig config, boolean enforceWhitelist) {

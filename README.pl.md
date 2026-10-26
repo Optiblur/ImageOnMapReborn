@@ -20,6 +20,31 @@ tworzyć od nowa.
 Gotowy plik `.jar` jest w zakładce **Releases**; można też zbudować go samemu (sekcja
 [Budowanie ze źródeł](#budowanie-ze-źródeł)).
 
+### Nowości w 1.2.0
+
+- **Domyślnie po angielsku** – nowe instalacje startują po angielsku, polski to jedna opcja
+  (`lang: pl-PL`). Serwery, które już używają pluginu, zostają przy swoim języku.
+- **Podsumowanie w konsoli przy starcie** – wersja, liczba obrazów, folder upload, język, serwer
+  i sprawdzanie aktualizacji w jednym miejscu:
+  ```
+  +------------------------------------------------------+
+  | ImageOnMapReborn 1.2.0  by Optiblur                  |
+  | Pictures on maps - the successor of ImageOnMap       |
+  +------------------------------------------------------+
+  | Images    12 (48 maps, 3 players)                    |
+  | Uploads   2 pictures in upload/ (/tomap file:<name>) |
+  | Language  pl_PL                                      |
+  | Server    Paper 1.21.11                              |
+  | Updates   checking SpigotMC for a new version...     |
+  +------------------------------------------------------+
+  ```
+  Kilka sekund później konsola mówi, czy masz najnowszą wersję, albo pokazuje ramkę z nową wersją
+  i linkiem do pobrania.
+- **Obrazy z dysku serwera** – wrzuć obraz do `plugins/ImageOnMapReborn/upload/` i użyj
+  `/tomap file:logo.png`, bez wrzucania go najpierw na jakąś stronę (zobacz
+  [Obrazy z dysku serwera](#obrazy-z-dysku-serwera)).
+- **`/maptool info`** – wersja, stan aktualizacji i statystyki, w grze albo w konsoli.
+
 ### Nowości w 1.1.0
 
 - **Dithering** – zdjęcia i płynne przejścia kolorów wyglądają dużo lepiej (zobacz [Jakość obrazu](#jakość-obrazu-dithering)).
@@ -35,7 +60,7 @@ Gotowy plik `.jar` jest w zakładce **Releases**; można też zbudować go samem
 2. Wyłącz serwer.
 3. Usuń **tylko plik** `plugins/ImageOnMap-x.x.x.jar`. **Folderu `plugins/ImageOnMap` nie usuwaj** –
    nowy plugin czyta z niego dane.
-4. Wrzuć `ImageOnMapReborn-1.1.0.jar` do `plugins/`.
+4. Wrzuć `ImageOnMapReborn-1.2.0.jar` do `plugins/`.
 5. Włącz serwer. W konsoli pojawi się:
    ```
    [ImageOnMapReborn] Found ImageOnMap data in plugins/ImageOnMap, importing it ...
@@ -63,12 +88,13 @@ pluginu, kopiując `maps/` i `images/` z powrotem.
 > Jeśli stary plugin jest nadal zainstalowany, ImageOnMapReborn wypisze w konsoli duże ostrzeżenie –
 > oba pluginy nie powinny działać jednocześnie.
 
-### Aktualizacja ImageOnMapReborn (np. 1.0.0 → 1.1.0)
+### Aktualizacja ImageOnMapReborn (np. 1.1.0 → 1.2.0)
 
 Wyłącz serwer, podmień stary plik `ImageOnMapReborn-x.x.x.jar` na nowy i włącz serwer. To wszystko: mapy,
 ustawienia i tłumaczenia zostają. Nowe opcje są dopisywane na końcu `config.yml` (konsola wypisze, które),
 a polskie komentarze z wersji 1.0.0 są zamieniane na angielskie – Twoje wartości i Twoje własne komentarze
-się nie zmieniają.
+się nie zmieniają. Język też zostaje: serwer, który działał po polsku, dalej ma `lang: pl-PL`, a po
+angielsku startują tylko nowe instalacje.
 
 ---
 
@@ -76,7 +102,7 @@ się nie zmieniają.
 
 | Komenda | Opis |
 |---|---|
-| `/tomap <link> [resize\|resize-stretched\|resize-covered] [szer. wys.] [dither\|nodither]` | Tworzy mapy z obrazka. Bez trybu obraz ma oryginalny rozmiar i jest cięty na tyle map, ile trzeba (wyśrodkowany). `resize` = jedna mapa, `resize 4 3` = plakat 4×3 mapy (można też `4x3` lub `4*3`). `dither` / `nodither` włącza albo wyłącza dithering dla tego obrazu. Animowane GIF-y stają się animowanymi mapami. |
+| `/tomap <link\|file:nazwa> [resize\|resize-stretched\|resize-covered] [szer. wys.] [dither\|nodither]` | Tworzy mapy z obrazka. Bez trybu obraz ma oryginalny rozmiar i jest cięty na tyle map, ile trzeba (wyśrodkowany). `resize` = jedna mapa, `resize 4 3` = plakat 4×3 mapy (można też `4x3` lub `4*3`). `dither` / `nodither` włącza albo wyłącza dithering dla tego obrazu. Animowane GIF-y stają się animowanymi mapami. `file:<nazwa>` bierze obraz z folderu upload (zobacz [Obrazy z dysku serwera](#obrazy-z-dysku-serwera)). |
 | `/maps [gracz]` | Menu z mapami (LPM – weź mapę, PPM – szczegóły: zmiana nazwy, usuwanie, pojedyncze części plakatu). Książka ze statystykami i limitami. |
 | `/givemap <gracz> [właściciel:]<nazwa>` | Daje mapę graczowi. Działa z konsoli i bloków poleceń (wtedy właściciel jest wymagany), obsługuje `@p`. |
 | `/maptool new …` | To samo co `/tomap`. |
@@ -86,13 +112,31 @@ się nie zmieniają.
 | `/maptool explore [gracz]` | To samo co `/maps`. |
 | `/maptool give …` | To samo co `/givemap`. |
 | `/maptool rename [gracz:]<nazwa> <nowa nazwa>` | Zmiana nazwy (nazwy ze spacjami w cudzysłowie). |
-| `/maptool update [gracz:]<nazwa> <nowy link> [stretched\|covered] [dither\|nodither]` | Podmienia obraz (albo animowany GIF) na tych samych mapach (wiszące plakaty zmieniają się od razu). |
+| `/maptool update [gracz:]<nazwa> <nowy link\|file:nazwa> [stretched\|covered] [dither\|nodither]` | Podmienia obraz (albo animowany GIF) na tych samych mapach (wiszące plakaty zmieniają się od razu). |
 | `/maptool delete [gracz:]<nazwa>` | Usuwa obraz (z potwierdzeniem). |
 | `/maptool import [folder]` | Ponowny import ze starego ImageOnMap. |
 | `/maptool reload` | Przeładowanie `config.yml` i tłumaczeń. |
+| `/maptool info` | Wersja, stan aktualizacji i statystyki (alias `version`). W konsoli to ta sama ramka co przy starcie. |
 
 Nazwy map ze spacjami: `"Bardzo fajna mapa"`, mapa innego gracza: `Gracz:"Bardzo fajna mapa"` –
 dokładnie jak w ImageOnMap.
+
+### Obrazy z dysku serwera
+
+Zamiast linku `/tomap` i `/maptool update` mogą wziąć obraz z folderu
+`plugins/ImageOnMapReborn/upload/` (powstaje przy pierwszym uruchomieniu):
+
+```
+/tomap file:logo.png resize 4 3
+/maptool update "Tabliczka spawn" file:event/dzien1.png
+```
+
+- Działają PNG, JPEG, GIF (też animowane), BMP i WebP; podfoldery zapisuje się przez `/`.
+- Nazwy plików nie mogą mieć spacji. Podpowiadanie Tabem pokazuje obrazy z folderu.
+- Można użyć tylko plików z folderu upload (`file:../cokolwiek` jest odrzucane).
+- Gracze potrzebują uprawnienia `imageonmap.localfiles` (OP-y mają je domyślnie). Lista dozwolonych
+  stron nie obowiązuje, a limity rozmiaru (`max-image-pixels`, `limit-map-size-x/y`,
+  `download.max-size-mb`) tak.
 
 ### Mapy splatter (plakaty)
 
@@ -161,8 +205,9 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 | `imageonmap.deleteother` | OP | Usuwanie map innych graczy |
 | `imageonmap.updateother` | OP | `/maptool update` map innych graczy |
 | `imageonmap.give` | OP | `/givemap` |
-| `imageonmap.administrative` | OP | `/maptool import`, `/maptool reload` |
+| `imageonmap.administrative` | OP | `/maptool import`, `/maptool reload`, `/maptool info` |
 | `imageonmap.notifyupdate` | OP | Informacja o nowej wersji pluginu przy wejściu na serwer (nowe) |
+| `imageonmap.localfiles` | OP | Obrazy z folderu upload: `/tomap file:<nazwa>` (nowe) |
 | `imageonmap.bypasssize` | OP | Ignoruje `limit-map-size-x/y` |
 | `imageonmap.bypassmaplimit` | OP | Ignoruje `map-player-limit` i `imageonmap.maplimit.<n>` |
 | `imageonmap.bypassimagelimit` | OP | Ignoruje `imageonmap.imagelimit.<n>` |
@@ -175,7 +220,7 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 
 | Opcja | Domyślnie | Opis |
 |---|---|---|
-| `lang` | `pl-PL` | Język (`pl-PL`, `en-US`; pusty = język systemu) |
+| `lang` | `en-US` | Język (`en-US`, `pl-PL`; pusty = język systemu). **Ustaw `pl-PL`, żeby mieć polski.** |
 | `per-player-language` | `false` | Wiadomości w języku klienta gracza |
 | `map-global-limit` / `map-player-limit` | `0` | Limit map na serwer / na gracza (0 = bez limitu) |
 | `limit-map-size-x` / `limit-map-size-y` | `0` | Maks. rozmiar obrazka w pikselach |
@@ -225,10 +270,11 @@ Wymagane: JDK 17+ i Maven 3.9+.
 mvn package
 ```
 
-Wynik: `target/ImageOnMapReborn-1.1.0.jar` (zawiera bibliotekę TwelveMonkeys do WebP, przeniesioną
+Wynik: `target/ImageOnMapReborn-1.2.0.jar` (zawiera bibliotekę TwelveMonkeys do WebP, przeniesioną
 do pakietu `pl.iomreborn.lib`, więc nie koliduje z innymi pluginami). `mvn test` uruchamia testy
 jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, parser komend, dekodowanie,
-dithering, klatki GIF-ów, pliki animacji, aktualizacja configu, sprawdzanie wersji).
+dithering, klatki GIF-ów, pliki animacji, aktualizacja configu, sprawdzanie wersji, ramka w konsoli,
+folder upload).
 
 ---
 
