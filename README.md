@@ -2,6 +2,8 @@
 
 🇬🇧 **English** | 🇵🇱 [Polski](README.pl.md)
 
+[![Available on SpigotMC](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/spigot_vector.svg)](https://www.spigotmc.org/resources/imageonmapreborn.139800/)
+
 A Minecraft plugin that puts pictures from the Internet onto maps – a from-scratch, **unofficial
 successor of ImageOnMap** (which has not been updated since 2021). It has the same features, the same
 commands and the same permissions, and on its first start it **moves every map of the old plugin over
@@ -17,7 +19,7 @@ be created again.
 - Folia is not supported
 - License: **GPL-3.0**
 
-The ready-to-use `.jar` is in the **Releases** tab; you can also build it yourself (see
+The ready-to-use `.jar` is on [SpigotMC](https://www.spigotmc.org/resources/imageonmapreborn.139800/) and in the **Releases** tab; you can also build it yourself (see
 [Building from source](#building-from-source)).
 
 ### New in 1.2.0

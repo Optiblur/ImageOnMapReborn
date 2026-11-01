@@ -2,6 +2,8 @@
 
 🇬🇧 [English](README.md) | 🇵🇱 **Polski**
 
+[![Dostępne na SpigotMC](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/spigot_vector.svg)](https://www.spigotmc.org/resources/imageonmapreborn.139800/)
+
 Plugin do Minecrafta, który wczytuje obrazek z internetu na mapy – napisany od nowa,
 **nieoficjalny następca ImageOnMap** (nierozwijanego od 2021 roku). Ma te same funkcje, te same
 komendy i te same uprawnienia, a przy pierwszym starcie **sam przenosi wszystkie mapy ze starego
@@ -17,7 +19,7 @@ tworzyć od nowa.
 - Folia nie jest obsługiwana
 - Licencja: **GPL-3.0**
 
-Gotowy plik `.jar` jest w zakładce **Releases**; można też zbudować go samemu (sekcja
+Gotowy plik `.jar` jest na [SpigotMC](https://www.spigotmc.org/resources/imageonmapreborn.139800/) i w zakładce **Releases**; można też zbudować go samemu (sekcja
 [Budowanie ze źródeł](#budowanie-ze-źródeł)).
 
 ### Nowości w 1.2.0
