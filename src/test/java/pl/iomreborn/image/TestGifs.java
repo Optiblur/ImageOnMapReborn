@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /** Writes animated GIFs for the tests, with frame positions, delays and disposal methods. */
@@ -68,6 +69,48 @@ final class TestGifs {
             writer.dispose();
         }
         return bytes.toByteArray();
+    }
+
+    /**
+     * A GIF written byte by byte, so its frames can claim any size, even far bigger than the GIF itself (which
+     * image writers refuse). The frames start at the top-left corner and hold no pixels, only the codes that start
+     * and end the picture data, so the file stays tiny whatever sizes the frames claim. Their pixels are
+     * transparent.
+     *
+     * @param frameSizes width and height claimed by every frame
+     */
+    static byte[] withFrameSizes(int screenWidth, int screenHeight, int[]... frameSizes) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.writeBytes("GIF89a".getBytes(StandardCharsets.US_ASCII));
+        littleEndian(out, screenWidth);
+        littleEndian(out, screenHeight);
+        out.write(0x87); // global color table of 256 colors
+        out.write(0); // background color
+        out.write(0); // pixel aspect ratio
+        for (int i = 0; i < 256; i++) {
+            out.write(i);
+            out.write(i);
+            out.write(i);
+        }
+        for (int[] size : frameSizes) {
+            // Shown 100 ms, color 0 is transparent.
+            out.writeBytes(new byte[] {0x21, (byte) 0xF9, 0x04, 0x01, 0x0A, 0x00, 0x00, 0x00});
+            out.write(0x2C);
+            littleEndian(out, 0);
+            littleEndian(out, 0);
+            littleEndian(out, size[0]);
+            littleEndian(out, size[1]);
+            out.write(0);
+            // Picture data with 8-bit codes: CLEAR (256) and END (257), 9 bits each.
+            out.writeBytes(new byte[] {0x08, 0x03, 0x00, 0x03, 0x02, 0x00});
+        }
+        out.write(0x3B);
+        return out.toByteArray();
+    }
+
+    private static void littleEndian(ByteArrayOutputStream out, int value) {
+        out.write(value & 0xFF);
+        out.write((value >> 8) & 0xFF);
     }
 
     private static IIOMetadataNode child(IIOMetadataNode root, String name) {

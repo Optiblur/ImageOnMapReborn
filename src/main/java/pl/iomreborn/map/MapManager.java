@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitTask;
 import pl.iomreborn.ImageOnMapReborn;
-import pl.iomreborn.config.PluginConfig;
 import pl.iomreborn.image.RenderException;
 import pl.iomreborn.storage.MapStorage;
 import pl.iomreborn.util.Tasks;
@@ -253,24 +252,8 @@ public final class MapManager {
      * @throws RenderException with a translated message key when a limit would be exceeded
      */
     public void checkCreateLimits(UUID owner, int newMaps, LimitContext limits) throws RenderException {
-        PluginConfig config = plugin.settings();
-        if (config.mapGlobalLimit() > 0 && getTotalMapCount() + newMaps > config.mapGlobalLimit()) {
-            throw new RenderException("error.limit-server-maps");
-        }
-        int maps = getMapCount(owner);
-        int images = getImageCount(owner);
-        if (!limits.bypassImageLimit() && limits.imageLimit().isPresent()
-                && images + 1 > limits.imageLimit().getAsInt()) {
-            throw new RenderException("error.limit-permission-images", limits.imageLimit().getAsInt(), images);
-        }
-        if (!limits.bypassMapLimit()) {
-            if (config.mapPlayerLimit() > 0 && maps + newMaps > config.mapPlayerLimit()) {
-                throw new RenderException("error.limit-player-maps", config.mapPlayerLimit());
-            }
-            if (limits.mapLimit().isPresent() && maps + newMaps > limits.mapLimit().getAsInt()) {
-                throw new RenderException("error.limit-permission-maps", limits.mapLimit().getAsInt(), maps);
-            }
-        }
+        Quota.of(plugin.settings(), limits).check(newMaps, getMapCount(owner), getImageCount(owner),
+                getTotalMapCount());
     }
 
     public void markDirty(PlayerMapStore store) {

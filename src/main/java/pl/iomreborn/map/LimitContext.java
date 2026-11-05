@@ -12,6 +12,9 @@ public record LimitContext(boolean bypassMapLimit, boolean bypassImageLimit,
 
     public static final LimitContext UNLIMITED =
             new LimitContext(true, true, OptionalInt.empty(), OptionalInt.empty());
+    /** Only the limits of config.yml: for players who are offline, whose permissions are not known. */
+    public static final LimitContext CONFIG_ONLY =
+            new LimitContext(false, false, OptionalInt.empty(), OptionalInt.empty());
 
     public static LimitContext of(CommandSender sender) {
         if (!(sender instanceof Player)) {

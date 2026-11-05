@@ -1,3 +1,5 @@
 * text=auto eol=lf
+# Windows batch files (mvnw.cmd) need Windows line endings.
+*.cmd text eol=crlf
 *.png binary
 *.jar binary

@@ -156,6 +156,7 @@ public final class ImageOnMapReborn extends JavaPlugin {
                         + count(mapManager.getStores().size(), "player") + ")")
                 .row("Uploads", uploads + ChatColor.GRAY.toString() + (uploads == 1 ? " picture" : " pictures")
                         + " in upload/ (/tomap file:<name>)")
+                .row("Limits", limitsSummary(settings))
                 .row("Language", language)
                 .row("Server", serverName())
                 .row("Updates", updates);
@@ -164,6 +165,23 @@ public final class ImageOnMapReborn extends JavaPlugin {
     /** "1 map", "5 maps". */
     private static String count(int number, String noun) {
         return number + " " + noun + (number == 1 ? "" : "s");
+    }
+
+    /** The map limits of config.yml in a few words, for the console; a server without limits is pointed out. */
+    static String limitsSummary(PluginConfig settings) {
+        int player = settings.mapPlayerLimit();
+        int server = settings.mapGlobalLimit();
+        if (player <= 0 && server <= 0) {
+            return ChatColor.YELLOW + "none" + ChatColor.GRAY + " (map-player-limit in config.yml)";
+        }
+        List<String> parts = new ArrayList<>();
+        if (player > 0) {
+            parts.add(count(player, "map") + " per player");
+        }
+        if (server > 0) {
+            parts.add(count(server, "map") + " on the server");
+        }
+        return String.join(ChatColor.GRAY + ", " + ChatColor.WHITE, parts);
     }
 
     /** For example "Paper 1.21.11". */

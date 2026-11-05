@@ -18,6 +18,7 @@ import pl.iomreborn.storage.ImageStorage;
 import pl.iomreborn.util.Tasks;
 import pl.iomreborn.util.Text;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,12 @@ public final class RenderService {
 
     /** Animated GIFs with more pixels per frame are only used as a still picture (memory needed per frame). */
     static final long ANIMATION_MAX_PIXELS = 4_000_000L;
+    /**
+     * Animated GIFs that need more work than this to go through all their frames ({@link GifDecoder#decodingWork()})
+     * are only used as a still picture: about 125 frames of 2000 x 2000 px, or 2000 frames of 500 x 500 px, a few
+     * seconds of work. Without it, a GIF within every other limit could keep a worker busy for half a minute.
+     */
+    static final long ANIMATION_MAX_WORK = 500_000_000L;
 
     private final ImageOnMapReborn plugin;
     private final Set<UUID> busy = new HashSet<>();
@@ -343,8 +350,18 @@ public final class RenderService {
                 return null;
             }
             sizeCheck.check(gif.width(), gif.height());
-            if ((long) gif.width() * gif.height() > ANIMATION_MAX_PIXELS) {
-                notes.add(new Note("render.animation-too-many-pixels", gif.width(), gif.height()));
+            // A frame may claim to be bigger than the GIF (only its visible part is decoded, but reading it still
+            // takes time): such files are used as a still picture too.
+            Dimension largest = gif.largestFrame();
+            boolean frameBigger = (long) largest.width * largest.height > (long) gif.width() * gif.height();
+            int frameWidth = frameBigger ? largest.width : gif.width();
+            int frameHeight = frameBigger ? largest.height : gif.height();
+            if ((long) frameWidth * frameHeight > ANIMATION_MAX_PIXELS) {
+                notes.add(new Note("render.animation-too-many-pixels", frameWidth, frameHeight));
+                return null;
+            }
+            if (gif.decodingWork() > ANIMATION_MAX_WORK) {
+                notes.add(new Note("render.animation-too-heavy"));
                 return null;
             }
             int[] size = sizeFor.maps(gif.width(), gif.height());

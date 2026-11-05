@@ -53,6 +53,7 @@ render:
   animation-not-allowed: "&eYou can't make animated maps, so only the first frame of the GIF is used."
   animation-too-big: "&eAn animation of {0} × {1} maps is too big (the limit is {2} maps), so only the first frame of the GIF is used."
   animation-too-many-pixels: "&eA {0} × {1} px GIF is too large to animate, so only its first frame is used."
+  animation-too-heavy: "&eThis GIF has too many big frames to animate, so only its first frame is used."
 
 error:
   invalid-url: "that link doesn't look valid."
@@ -167,6 +168,7 @@ command:
     author: "&7Author: &f{0}"
     images: "&7Images: &f{0} &7(maps: {1}, players: {2})"
     uploads: "&7Pictures in the upload folder: &f{0} &8(/tomap file:<name>)"
+    limits: "&7Map limits: &f{0} &7per player, &f{1} &7on the server"
     language: "&7Language: &f{0}"
     server: "&7Server: &f{0}"
     update-off: "&7Updates: &8the check is turned off"
@@ -216,7 +218,8 @@ gui:
       other: "&f{0}&7 maps in use"
     limits-title: "&9Limits"
     server-limit: "&7Whole server: &f{0}"
-    player-limit: "&7Each player: &f{0}"
+    player-map-limit: "&7This player: &f{0}"
+    player-image-limit: "&7Images of this player: &f{0}"
     unlimited: "no limit"
     quota-used: "&7Used: &f{0}%"
     maps-left:

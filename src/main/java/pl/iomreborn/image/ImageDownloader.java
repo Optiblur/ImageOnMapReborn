@@ -11,16 +11,25 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Downloads images over HTTP(S) with size limits, manual redirect handling and an optional private-network guard. */
+/**
+ * Downloads images over HTTP(S) with size and time limits, manual redirect handling and an optional
+ * private-network guard.
+ */
 public final class ImageDownloader {
 
     private static final int MAX_REDIRECTS = 5;
+    /** A whole download, redirects included, may take this many times the connect/read timeout. */
+    static final int TOTAL_TIME_FACTOR = 3;
     private static final Pattern IMGUR_PAGE = Pattern.compile("^/([A-Za-z0-9]{5,10})/?$");
 
-    /** Everything a download needs, captured on the main thread. */
+    /**
+     * Everything a download needs, captured on the main thread. {@code timeoutMillis} limits connecting and every
+     * read; the whole download is stopped once it took three times as long ({@link #TOTAL_TIME_FACTOR}).
+     */
     public record Request(String url, int timeoutMillis, long maxBytes, boolean blockPrivateAddresses,
                           String userAgent, List<String> whitelist, boolean enforceWhitelist) {
     }
@@ -101,21 +110,28 @@ public final class ImageDownloader {
             throw new RenderException("error.untrusted-host");
         }
 
+        try (Deadline deadline = new Deadline((long) request.timeoutMillis() * TOTAL_TIME_FACTOR)) {
+            return fetch(url, request, deadline);
+        }
+    }
+
+    private static byte[] fetch(URL url, Request request, Deadline deadline) throws RenderException {
         for (int redirects = 0; ; redirects++) {
             if (request.blockPrivateAddresses()) {
                 checkPublicHost(url.getHost());
             }
+            int timeout = deadline.timeout(request.timeoutMillis());
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setInstanceFollowRedirects(false);
-                connection.setConnectTimeout(request.timeoutMillis());
-                connection.setReadTimeout(request.timeoutMillis());
+                connection.setConnectTimeout(timeout);
+                connection.setReadTimeout(timeout);
                 connection.setRequestProperty("User-Agent", request.userAgent());
                 connection.setRequestProperty("Accept",
                         "image/webp,image/png,image/jpeg,image/gif,image/bmp,image/*;q=0.8,*/*;q=0.5");
 
-                int code = connection.getResponseCode();
+                int code = deadline.responseCode(connection);
                 if (code >= 300 && code < 400) {
                     String location = connection.getHeaderField("Location");
                     if (location == null || location.isBlank()) {
@@ -140,37 +156,131 @@ public final class ImageDownloader {
                     throw new RenderException("error.download-too-large", request.maxBytes() / (1024 * 1024));
                 }
                 try (InputStream in = connection.getInputStream()) {
-                    return readLimited(in, request.maxBytes());
+                    return readLimited(in, request.maxBytes(), deadline);
                 }
             } catch (SocketTimeoutException ex) {
                 throw new RenderException("error.timeout");
             } catch (UnknownHostException ex) {
                 throw new RenderException("error.unknown-host", url.getHost());
             } catch (IOException ex) {
+                if (deadline.passed()) {
+                    throw new RenderException("error.timeout");
+                }
                 throw new RenderException("error.download-failed", describe(ex));
             } catch (ClassCastException ex) {
                 throw new RenderException("error.unsupported-protocol");
             } finally {
                 if (connection != null) {
-                    connection.disconnect();
+                    deadline.disconnect(connection);
                 }
             }
         }
     }
 
-    private static byte[] readLimited(InputStream in, long maxBytes) throws IOException, RenderException {
+    private static byte[] readLimited(InputStream in, long maxBytes, Deadline deadline)
+            throws IOException, RenderException {
         ByteArrayOutputStream out = new ByteArrayOutputStream(64 * 1024);
         byte[] buffer = new byte[16 * 1024];
         long total = 0;
-        int read;
-        while ((read = in.read(buffer)) != -1) {
+        while (true) {
+            int read = in.read(buffer);
+            // A read returns as soon as some data came in, so a server sending a little at a time is stopped here.
+            deadline.check();
+            if (read == -1) {
+                return out.toByteArray();
+            }
             total += read;
             if (total > maxBytes) {
                 throw new RenderException("error.download-too-large", maxBytes / (1024 * 1024));
             }
             out.write(buffer, 0, read);
         }
-        return out.toByteArray();
+    }
+
+    /**
+     * Time limit of a whole download. While the body is read, every read returns as soon as some data comes in,
+     * so {@link #check()} stops a server that sends one byte at a time. While a connection waits for the response
+     * headers nothing returns until they are complete (each byte restarts the read timeout), so a watchdog thread
+     * closes the connection once the time is up.
+     */
+    private static final class Deadline implements AutoCloseable {
+
+        /** How often the watchdog tries again to close the waiting connection, once the time is up. */
+        private static final long RETRY_MILLIS = 100;
+
+        private final long end;
+        private final Thread watchdog;
+        /** The connection waiting for its response headers, if any. */
+        private volatile HttpURLConnection waiting;
+
+        Deadline(long millis) {
+            end = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(millis);
+            watchdog = new Thread(this::watch, "ImageOnMapReborn-download-timeout");
+            watchdog.setDaemon(true);
+            watchdog.start();
+        }
+
+        boolean passed() {
+            return System.nanoTime() - end >= 0;
+        }
+
+        void check() throws RenderException {
+            if (passed()) {
+                throw new RenderException("error.timeout");
+            }
+        }
+
+        /** Connect and read timeout of the next connection: {@code limit}, or less when the deadline is closer. */
+        int timeout(int limit) throws RenderException {
+            long left = TimeUnit.NANOSECONDS.toMillis(end - System.nanoTime());
+            if (left <= 0) {
+                throw new RenderException("error.timeout");
+            }
+            return (int) Math.min(limit, left);
+        }
+
+        /** Sends the request and waits for the response headers, watched by the watchdog. */
+        int responseCode(HttpURLConnection connection) throws IOException {
+            waiting = connection;
+            try {
+                return connection.getResponseCode();
+            } finally {
+                waiting = null;
+            }
+        }
+
+        /** Closes a connection; the watchdog and the download never do it at the same time. */
+        synchronized void disconnect(HttpURLConnection connection) {
+            connection.disconnect();
+        }
+
+        private void watch() {
+            try {
+                long left;
+                while ((left = end - System.nanoTime()) > 0) {
+                    TimeUnit.NANOSECONDS.sleep(left);
+                }
+                // A connection may start waiting a moment later: keep trying until the download gives up.
+                while (true) {
+                    HttpURLConnection connection = waiting;
+                    if (connection != null) {
+                        try {
+                            disconnect(connection);
+                        } catch (RuntimeException ignored) {
+                            // the download is closing it too
+                        }
+                    }
+                    Thread.sleep(RETRY_MILLIS);
+                }
+            } catch (InterruptedException ended) {
+                // the download is over
+            }
+        }
+
+        @Override
+        public void close() {
+            watchdog.interrupt();
+        }
     }
 
     private static void checkPublicHost(String host) throws RenderException {

@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class GifDecoderTest {
 
@@ -116,6 +119,64 @@ class GifDecoderTest {
         BufferedImage still = ImageDecoder.decode(disposalGif(), (w, h) -> { });
         assertEquals(40, still.getWidth());
         assertEquals(RED, still.getRGB(10, 10));
+    }
+
+    @Test
+    void framesClaimingAHugeSizeNeedNoMoreMemoryThanTheGif() throws Exception {
+        // A 10 x 10 px GIF of about 800 bytes whose second frame claims 16384 x 16384 px (268 million pixels).
+        byte[] gif = TestGifs.withFrameSizes(10, 10, new int[] {10, 10}, new int[] {16384, 16384});
+        com.sun.management.ThreadMXBean threads =
+                (com.sun.management.ThreadMXBean) ManagementFactory.getThreadMXBean();
+        assumeTrue(threads.isThreadAllocatedMemorySupported() && threads.isThreadAllocatedMemoryEnabled());
+        try (GifDecoder decoder = GifDecoder.open(gif)) {
+            assertNotNull(decoder);
+            assertEquals(10, decoder.width());
+            assertEquals(10, decoder.height());
+            assertEquals(new Dimension(16384, 16384), decoder.largestFrame());
+
+            long thread = Thread.currentThread().getId();
+            long before = threads.getThreadAllocatedBytes(thread);
+            int delivered = decoder.forEachFrame((index, frame, delay) -> assertEquals(10, frame.getWidth()));
+            long allocated = threads.getThreadAllocatedBytes(thread) - before;
+            assertEquals(2, delivered);
+            assertTrue(allocated < 32L * 1024 * 1024, "decoding took " + allocated / (1024 * 1024) + " MB");
+        }
+    }
+
+    @Test
+    void measuresTheWorkOfGoingThroughAllFrames() throws Exception {
+        try (GifDecoder decoder = GifDecoder.open(disposalGif())) {
+            assertNotNull(decoder);
+            // Frames of 40 x 30, 10 x 10, 10 x 10 (undone afterwards: two copies of the whole GIF) and 4 x 4 px.
+            assertEquals(1200 + 100 + (100 + 2 * 1200) + 16, decoder.decodingWork());
+        }
+        byte[] huge = TestGifs.withFrameSizes(10, 10, new int[] {10, 10}, new int[] {16384, 16384});
+        try (GifDecoder decoder = GifDecoder.open(huge)) {
+            assertNotNull(decoder);
+            assertEquals(100 + 16384L * 16384, decoder.decodingWork(), "frames count with the size they claim");
+        }
+    }
+
+    @Test
+    void framesPartlyOutsideTheGifAreCutInTheRightPlace() throws Exception {
+        byte[] gif = TestGifs.write(List.of(
+                TestGifs.Frame.full(TestGifs.filled(40, 30, Color.RED), 10),
+                new TestGifs.Frame(TestGifs.filled(10, 10, Color.BLUE), 35, 25, 10, "none"),
+                new TestGifs.Frame(TestGifs.filled(4, 4, Color.GREEN), 60, 50, 10, "none")));
+        List<Captured> frames = decodeAll(gif);
+        assertEquals(3, frames.size());
+
+        BufferedImage second = frames.get(1).image();
+        assertEquals(40, second.getWidth());
+        assertEquals(30, second.getHeight());
+        assertEquals(BLUE, second.getRGB(35, 25), "the visible corner of the frame is where the frame starts");
+        assertEquals(BLUE, second.getRGB(39, 29));
+        assertEquals(RED, second.getRGB(34, 24));
+        assertEquals(RED, second.getRGB(20, 15));
+
+        BufferedImage third = frames.get(2).image();
+        assertEquals(BLUE, third.getRGB(39, 29), "a frame completely outside the GIF changes nothing");
+        assertEquals(RED, third.getRGB(0, 0));
     }
 
     @Test

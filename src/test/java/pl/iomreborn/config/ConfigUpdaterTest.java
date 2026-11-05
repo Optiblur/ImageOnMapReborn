@@ -166,6 +166,28 @@ class ConfigUpdaterTest {
     }
 
     @Test
+    void theTimeoutCommentOfVersion120TellsAboutTheWholeDownload() throws Exception {
+        String old = "download:\n  # Time limit for connecting and for reading (seconds).\n  timeout-seconds: 5\n";
+        String translated = ConfigUpdater.translateComments(old, ConfigUpdater.OLD_CONFIG_COMMENTS);
+        String comment = translated.lines().skip(1).findFirst().orElseThrow();
+        assertTrue(comment.contains("A whole download may take 3 times as long."), comment);
+        assertTrue(bundled().contains(comment), "the comment is the one of the new config.yml");
+        assertTrue(translated.contains("  timeout-seconds: 5"), "the admin's value stays");
+    }
+
+    @Test
+    void thePixelLimitCommentOfVersion120MentionsBothSizes() throws Exception {
+        String old = "# 40 000 000 is about 6300 x 6300 px. It also applies to the size of a poster.\n"
+                + "max-image-pixels: 40000000\n";
+        String translated = ConfigUpdater.translateComments(old, ConfigUpdater.OLD_CONFIG_COMMENTS);
+        String comment = translated.lines().findFirst().orElseThrow();
+        assertTrue(comment.contains("16 000 000 is about 4000 x 4000 px"), comment);
+        assertTrue(comment.contains("40 000 000 about 6300 x 6300 px"), comment);
+        assertTrue(bundled().contains(comment), "the comment is the one of the new config.yml");
+        assertTrue(translated.contains("max-image-pixels: 40000000"), "servers keep their own limit");
+    }
+
+    @Test
     void newServersStartInEnglish() throws Exception {
         YamlConfiguration config = new YamlConfiguration();
         config.loadFromString(bundled());

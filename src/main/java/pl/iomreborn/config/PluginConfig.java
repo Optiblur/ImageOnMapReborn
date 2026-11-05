@@ -10,6 +10,13 @@ import java.util.List;
 /** Immutable snapshot of config.yml. Option names shared with ImageOnMap keep their old keys. */
 public final class PluginConfig {
 
+    /**
+     * Limits of new installations (the bundled config.yml has the same values). Files written by older versions
+     * keep the values they have; those made by a migration from ImageOnMap get the old plugin's values.
+     */
+    public static final int DEFAULT_MAP_PLAYER_LIMIT = 200;
+    public static final long DEFAULT_MAX_IMAGE_PIXELS = 16_000_000L;
+
     public static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                     + "Chrome/124.0 Safari/537.36 ImageOnMapReborn";
@@ -41,8 +48,9 @@ public final class PluginConfig {
     private PluginConfig(FileConfiguration c) {
         lang = c.getString("lang", "");
         perPlayerLanguage = c.getBoolean("per-player-language", false);
-        mapGlobalLimit = Math.max(0, intWithAlias(c, "map-global-limit", "Limit-map-by-server"));
-        mapPlayerLimit = Math.max(0, intWithAlias(c, "map-player-limit", "Limit-map-by-player"));
+        mapGlobalLimit = Math.max(0, intWithAlias(c, "map-global-limit", "Limit-map-by-server", 0));
+        mapPlayerLimit = Math.max(0, intWithAlias(c, "map-player-limit", "Limit-map-by-player",
+                DEFAULT_MAP_PLAYER_LIMIT));
         limitSizeX = Math.max(0, c.getInt("limit-map-size-x", 0));
         limitSizeY = Math.max(0, c.getInt("limit-map-size-y", 0));
         saveFullImage = c.getBoolean("save-full-image", false);
@@ -60,7 +68,7 @@ public final class PluginConfig {
         blockPrivateAddresses = c.getBoolean("download.block-private-addresses", true);
         String ua = c.getString("download.user-agent", DEFAULT_USER_AGENT);
         userAgent = ua == null || ua.isBlank() ? DEFAULT_USER_AGENT : ua;
-        maxImagePixels = Math.max(1_000_000L, c.getLong("max-image-pixels", 40_000_000L));
+        maxImagePixels = Math.max(1_000_000L, c.getLong("max-image-pixels", DEFAULT_MAX_IMAGE_PIXELS));
         smoothScaling = c.getBoolean("smooth-scaling", true);
         protectItemFrames = c.getBoolean("protect-item-frames", true);
         legacyImportEnabled = c.getBoolean("legacy-import.enabled", true);
@@ -79,11 +87,11 @@ public final class PluginConfig {
         return new PluginConfig(config);
     }
 
-    private static int intWithAlias(FileConfiguration c, String key, String alias) {
+    private static int intWithAlias(FileConfiguration c, String key, String alias, int def) {
         if (!c.contains(key, true) && c.contains(alias, true)) {
             return c.getInt(alias);
         }
-        return c.getInt(key, 0);
+        return c.getInt(key, def);
     }
 
     private static int clamp(int value, int min, int max) {

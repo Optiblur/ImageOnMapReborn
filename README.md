@@ -22,6 +22,22 @@ be created again.
 The ready-to-use `.jar` is on [SpigotMC](https://www.spigotmc.org/resources/imageonmapreborn.139800/) and in the **Releases** tab; you can also build it yourself (see
 [Building from source](#building-from-source)).
 
+### New in 1.2.1
+
+A security update, recommended for every server:
+- **Safer animated GIFs** – a specially made GIF could make the server reserve gigabytes of memory. Only the
+  part of each frame that lies on the picture is decoded now (like in web browsers), and GIFs whose frames
+  claim more than 4 million pixels are used as still pictures.
+- **Time limit for whole downloads** – a website sending a picture very slowly could keep a download going
+  forever and block `/tomap` for everyone. A whole download now stops after 3 × `download.timeout-seconds`
+  (60 s by default).
+- **Long GIFs no longer hold up picture making** – a GIF with up to 2000 big frames could keep it busy for
+  half a minute. GIFs that would need too much work are used as still pictures now.
+- **Limits for new installations** – `map-player-limit: 200` and `max-image-pixels: 16000000`, so one picture
+  can no longer use thousands of maps. Servers that already run the plugin keep their values (see
+  [Configuration](#configuration-pluginsimageonmaprebornconfigyml)). The startup summary and `/maptool info`
+  show the map limits, and the overview book in `/maps` now counts the limits given with permissions too.
+
 ### New in 1.2.0
 
 - **English by default** – new installations start in English, Polish is one option away (`lang: pl-PL`).
@@ -62,7 +78,7 @@ The ready-to-use `.jar` is on [SpigotMC](https://www.spigotmc.org/resources/imag
 2. Stop the server.
 3. Delete **only the file** `plugins/ImageOnMap-x.x.x.jar`. **Do not delete the `plugins/ImageOnMap`
    folder** – the new plugin reads its data from there.
-4. Put `ImageOnMapReborn-1.2.0.jar` into `plugins/`.
+4. Put `ImageOnMapReborn-1.2.1.jar` into `plugins/`.
 5. Start the server. The console will show:
    ```
    [ImageOnMapReborn] Found ImageOnMap data in plugins/ImageOnMap, importing it ...
@@ -90,7 +106,7 @@ copying `maps/` and `images/` back.
 > If the old plugin is still installed, ImageOnMapReborn prints a big warning in the console – both
 > plugins should not run at the same time.
 
-### Updating ImageOnMapReborn (e.g. 1.1.0 → 1.2.0)
+### Updating ImageOnMapReborn (e.g. 1.2.0 → 1.2.1)
 
 Stop the server, replace the old `ImageOnMapReborn-x.x.x.jar` with the new one and start the server. That's
 all: maps, settings and translations stay. New options are added at the end of `config.yml` (the console
@@ -171,6 +187,8 @@ hand and in item frames, all pieces of a poster stay in sync, and it keeps playi
 - The animation is limited to `animated-gifs.max-maps` maps (16 by default, e.g. a 4×4 poster) and
   `animated-gifs.max-frames` frames (100; longer GIFs skip frames but keep their length). Bigger GIFs are
   used as a still picture (their first frame) and the player is told why.
+- GIFs that would take too long to read (roughly more than 125 frames of 2000 × 2000 px, or 2000 frames of
+  500 × 500 px) are used as a still picture too.
 - Maps in item frames are normally updated by the server only twice per second, so the plugin sends
   the frames itself to players near the frame, at most `animated-gifs.max-fps` times per second (10).
 - Frames are kept in memory only while someone is looking at the animation (16 KB per frame and map) and
@@ -224,14 +242,14 @@ permissions (`…other`), `give` and the administrative ones are for OPs only.
 |---|---|---|
 | `lang` | `en-US` | Language (`en-US`, `pl-PL`; empty = system language). **Set `pl-PL` for Polish.** |
 | `per-player-language` | `false` | Messages in each player's client language |
-| `map-global-limit` / `map-player-limit` | `0` | Map limit for the server / per player (0 = no limit) |
+| `map-global-limit` / `map-player-limit` | `0` / `200` | Map limit for the server / per player (0 = no limit; OPs have no player limit) |
 | `limit-map-size-x` / `limit-map-size-y` | `0` | Maximum picture size in pixels |
 | `save-full-image` | `false` | Also saves the full picture next to its pieces |
 | `images-hostnames-whitelist` | `[]` | Allowed websites (e.g. `i.imgur.com`, `*.discordapp.com`) |
-| `download.timeout-seconds` | `20` | Download time limit |
+| `download.timeout-seconds` | `20` | Time limit for connecting and reading; a whole download may take 3× as long |
 | `download.max-size-mb` | `25` | Maximum size of a downloaded file |
 | `download.block-private-addresses` | `true` | Blocks links to local networks (protects the server) |
-| `max-image-pixels` | `40000000` | Protects the server's RAM from gigantic pictures |
+| `max-image-pixels` | `16000000` | Protects the server's RAM from gigantic pictures (16 000 000 ≈ 4000 × 4000 px) |
 | `smooth-scaling` | `true` | Smooth downscaling of photos (`false` = like the old plugin) |
 | `dithering` | `floyd-steinberg` | `floyd-steinberg`, `ordered` or `none` – see [Picture quality](#picture-quality-dithering) |
 | `animated-gifs.enabled` | `true` | Animated GIFs play on maps (`false` = only the first frame) |
@@ -241,6 +259,11 @@ permissions (`…other`), `give` and the administrative ones are for OPs only.
 | `protect-item-frames` | `true` | Protects item frames with pictures from mobs and explosions |
 | `legacy-import.enabled` / `legacy-import.folder` | `true` / `ImageOnMap` | Automatic import of the old data |
 | `check-for-updates` | `true` | Looks for a new version on SpigotMC at startup and every 12 hours |
+
+> The defaults of `map-player-limit` (200) and `max-image-pixels` (16 000 000) are those of new installations
+> since 1.2.1. Servers that installed an older version keep the values of their `config.yml` (often `0` and
+> `40000000`) – set them yourself to get the same protection. Players can also get their own limits with the
+> `imageonmap.maplimit.<n>` and `imageonmap.imagelimit.<n>` permissions.
 
 All texts are in `plugins/ImageOnMapReborn/lang/en_US.yml` and `pl_PL.yml` – you can change them
 freely (colors `&a`, `&#RRGGBB`), and add a language by copying a file as e.g. `de_DE.yml`.
@@ -266,16 +289,22 @@ freely (colors `&a`, `&#RRGGBB`), and add a language by copying a file as e.g. `
 
 ## Building from source
 
-Requirements: JDK 17+ and Maven 3.9+.
+Requirements: JDK 17+ (and `unzip` on Linux and macOS). Maven does not have to be installed: the Maven
+Wrapper downloads it the first time and checks its checksum.
 
 ```bash
-mvn package
+./mvnw package
 ```
 
-Result: `target/ImageOnMapReborn-1.2.0.jar` (it contains the TwelveMonkeys library for WebP, moved to
-the `pl.iomreborn.lib` package so it cannot clash with other plugins). `mvn test` runs the unit tests
+On Windows run `mvnw.cmd package`, with `JAVA_HOME` set to a JDK 17+ (for example
+`set JAVA_HOME=C:\Program Files\Java\jdk-21`).
+
+Result: `target/ImageOnMapReborn-1.2.1.jar` (it contains the TwelveMonkeys library for WebP, moved to
+the `pl.iomreborn.lib` package so it cannot clash with other plugins). `./mvnw test` runs the unit tests
 (ImageOnMap data format, picture cutting, poster geometry, command parser, decoding, dithering, GIF frames,
-animation files, config updates, update check, console box, upload folder).
+animation files, download limits, map limits, config updates, update check, console box, upload folder).
+GitHub Actions builds and tests every push on Java 17, 21 and 25 (and on Windows); the jar of each run can be
+downloaded from its page.
 
 ---
 

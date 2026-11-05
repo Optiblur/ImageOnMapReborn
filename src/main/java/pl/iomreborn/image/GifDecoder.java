@@ -4,12 +4,15 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.awt.AlphaComposite;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -162,8 +165,42 @@ public final class GifDecoder implements AutoCloseable {
     }
 
     /**
+     * Size of the frame with the most pixels, as the file declares it. A frame may claim to be far bigger than the
+     * GIF itself (a 40000 x 40000 px frame in a 10 x 10 px GIF); only its part on the GIF is ever decoded, but the
+     * declared size tells how much work reading it would be.
+     */
+    public Dimension largestFrame() {
+        Dimension largest = new Dimension(0, 0);
+        for (FrameInfo info : frames) {
+            if ((long) info.width() * info.height() > (long) largest.width * largest.height) {
+                largest = new Dimension(info.width(), info.height());
+            }
+        }
+        return largest;
+    }
+
+    /**
+     * How much work {@link #forEachFrame} has to do, in pixels: every pixel each frame declares (the reader goes
+     * through all of them, also those cut off), plus two copies of the whole GIF for every frame that is undone
+     * afterwards (restore to previous). A GIF with many big frames takes seconds per thousand million pixels.
+     */
+    public long decodingWork() {
+        long screen = (long) width * height;
+        long work = 0;
+        for (FrameInfo info : frames) {
+            work += (long) info.width() * info.height();
+            if (info.disposal() == Disposal.RESTORE_PREVIOUS) {
+                work += 2 * screen;
+            }
+        }
+        return work;
+    }
+
+    /**
      * Decodes the frames in order and gives each finished picture to the consumer. A frame that cannot be
-     * decoded ends the animation early (if at least two frames were read).
+     * decoded ends the animation early (if at least two frames were read). Like in web browsers, frames are cut
+     * to the size of the GIF, and only that part of them is decoded, so a frame that claims a huge size does not
+     * need more memory than the GIF itself.
      *
      * @return the number of frames given to the consumer
      */
@@ -187,23 +224,43 @@ public final class GifDecoder implements AutoCloseable {
             if (info.disposal() == Disposal.RESTORE_PREVIOUS) {
                 saved = canvas.getRGB(0, 0, width, height, saved, 0, width);
             }
-            BufferedImage frame;
-            try {
-                frame = reader.read(i);
-            } catch (IOException | RuntimeException ex) {
-                if (delivered >= 2) {
-                    break;
+            Rectangle visible = visiblePart(info);
+            if (visible != null) {
+                BufferedImage frame;
+                try {
+                    frame = reader.read(i, readParam(info, visible));
+                } catch (IOException | RuntimeException ex) {
+                    if (delivered >= 2) {
+                        break;
+                    }
+                    throw new IOException("Cannot decode frame " + i + " of the GIF", ex);
                 }
-                throw new IOException("Cannot decode frame " + i + " of the GIF", ex);
+                Graphics2D graphics = canvas.createGraphics();
+                graphics.drawImage(frame, visible.x, visible.y, null);
+                graphics.dispose();
             }
-            Graphics2D graphics = canvas.createGraphics();
-            graphics.drawImage(frame, info.x(), info.y(), null);
-            graphics.dispose();
             consumer.accept(i, canvas, info.delay());
             delivered++;
             previous = info;
         }
         return delivered;
+    }
+
+    /** The part of a frame that lies on the GIF, in the GIF's coordinates, or null when nothing of it does. */
+    Rectangle visiblePart(FrameInfo info) {
+        Rectangle visible = new Rectangle(info.x(), info.y(), info.width(), info.height())
+                .intersection(new Rectangle(0, 0, width, height));
+        return visible.isEmpty() ? null : visible;
+    }
+
+    /** Reads a frame that fits on the GIF whole (null = default settings), and of any other only its visible part. */
+    private ImageReadParam readParam(FrameInfo info, Rectangle visible) {
+        if (visible.width == info.width() && visible.height == info.height()) {
+            return null;
+        }
+        ImageReadParam param = reader.getDefaultReadParam();
+        param.setSourceRegion(new Rectangle(visible.x - info.x(), visible.y - info.y(), visible.width, visible.height));
+        return param;
     }
 
     @Override

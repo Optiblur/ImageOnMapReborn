@@ -1,0 +1,64 @@
+# Builds the plugin and runs all unit tests on every push and pull request, on the Java versions servers use
+# (17 for 1.20.1-1.20.4, 21 for 1.20.5-1.21.x, 25 for 26.x) and once on Windows. The jar built with Java 21
+# can be downloaded from the run's page (Artifacts).
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Java ${{ matrix.java }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        java: [17, 21, 25]
+        include:
+          - os: windows-latest
+            java: 21
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test (Linux)
+        if: runner.os != 'Windows'
+        run: ./mvnw -B -ntp verify
+
+      - name: Build and test (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: mvnw.cmd -B -ntp verify
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-java${{ matrix.java }}-${{ matrix.os }}
+          path: target/surefire-reports/
+          if-no-files-found: ignore
+
+      - name: Upload the plugin jar
+        if: runner.os == 'Linux' && matrix.java == 21
+        uses: actions/upload-artifact@v7
+        with:
+          name: ImageOnMapReborn
+          path: target/ImageOnMapReborn-*.jar
+          if-no-files-found: error

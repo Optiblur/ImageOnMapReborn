@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import pl.iomreborn.ImageOnMapReborn;
 import pl.iomreborn.Perm;
 import pl.iomreborn.command.SubCommand;
+import pl.iomreborn.config.PluginConfig;
 import pl.iomreborn.map.MapManager;
 import pl.iomreborn.update.UpdateChecker;
 
@@ -36,6 +37,9 @@ public final class InfoCommand extends SubCommand {
         messages().send(sender, "command.info.images", maps.getTotalImageCount(), maps.getTotalMapCount(),
                 maps.getStores().size());
         messages().send(sender, "command.info.uploads", plugin.localImages().names().size());
+        PluginConfig config = plugin.settings();
+        messages().send(sender, "command.info.limits", limit(sender, config.mapPlayerLimit()),
+                limit(sender, config.mapGlobalLimit()));
         messages().send(sender, "command.info.language", messages().serverLocale());
         messages().send(sender, "command.info.server", ImageOnMapReborn.serverName());
         UpdateChecker.Snapshot now = updates.snapshot();
@@ -47,5 +51,10 @@ public final class InfoCommand extends SubCommand {
             case UPDATE -> messages().send(sender, "command.info.update-available", now.newer().version(),
                     now.newer().url());
         }
+    }
+
+    /** A map limit of config.yml, or "no limit" in the language of the recipient. */
+    private String limit(CommandSender sender, int value) {
+        return value > 0 ? String.valueOf(value) : messages().get(sender, "gui.stats.unlimited");
     }
 }

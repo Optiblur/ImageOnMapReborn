@@ -14,8 +14,9 @@ per-player-language: false
 # Every image uses Minecraft maps (map IDs). Limit of maps for the whole server
 # and for each player. 0 = no limit.
 # Limits can also be given with permissions: imageonmap.maplimit.<number> and imageonmap.imagelimit.<number>.
+# OPs (imageonmap.bypassmaplimit) are not limited by map-player-limit.
 map-global-limit: 0
-map-player-limit: 0
+map-player-limit: 200
 
 # Maximum size of the source picture, in pixels. 0 = no limit.
 limit-map-size-x: 0
@@ -34,7 +35,7 @@ save-full-image: false
 images-hostnames-whitelist: []
 
 download:
-  # Time limit for connecting and for reading (seconds).
+  # Time limit for connecting and for reading (seconds). A whole download may take 3 times as long.
   timeout-seconds: 20
   # Maximum size of a downloaded file (MB).
   max-size-mb: 25
@@ -44,8 +45,8 @@ download:
   user-agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36 ImageOnMapReborn"
 
 # Maximum number of pixels of a picture (width x height) – protects the server's RAM.
-# 40 000 000 is about 6300 x 6300 px. It also applies to the size of a poster.
-max-image-pixels: 40000000
+# 16 000 000 is about 4000 x 4000 px, 40 000 000 about 6300 x 6300 px. It also limits the size of posters.
+max-image-pixels: 16000000
 
 # true = smooth scaling when shrinking (better photos),
 # false = "pixel by pixel" scaling like the old ImageOnMap.

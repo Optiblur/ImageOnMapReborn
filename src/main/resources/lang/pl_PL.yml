@@ -53,6 +53,7 @@ render:
   animation-not-allowed: "&eNie możesz tworzyć animowanych map, więc użyto tylko pierwszej klatki GIF-a."
   animation-too-big: "&eAnimacja na {0} × {1} map jest za duża (limit to {2} map), więc użyto tylko pierwszej klatki GIF-a."
   animation-too-many-pixels: "&eGIF {0} × {1} px jest za duży na animację, więc użyto tylko jego pierwszej klatki."
+  animation-too-heavy: "&eTen GIF ma za dużo dużych klatek, żeby go animować, więc użyto tylko jego pierwszej klatki."
 
 error:
   invalid-url: "ten link nie wygląda na poprawny."
@@ -169,6 +170,7 @@ command:
     author: "&7Autor: &f{0}"
     images: "&7Obrazy: &f{0} &7(map: {1}, graczy: {2})"
     uploads: "&7Obrazy w folderze upload: &f{0} &8(/tomap file:<nazwa>)"
+    limits: "&7Limity map: &f{0} &7na gracza, &f{1} &7na cały serwer"
     language: "&7Język: &f{0}"
     server: "&7Serwer: &f{0}"
     update-off: "&7Aktualizacje: &8sprawdzanie jest wyłączone"
@@ -220,7 +222,8 @@ gui:
       many: "&f{0}&7 map w użyciu"
     limits-title: "&9Limity"
     server-limit: "&7Cały serwer: &f{0}"
-    player-limit: "&7Na gracza: &f{0}"
+    player-map-limit: "&7Ten gracz: &f{0}"
+    player-image-limit: "&7Obrazy tego gracza: &f{0}"
     unlimited: "bez limitu"
     quota-used: "&7Wykorzystano: &f{0}%"
     maps-left:

@@ -1,5 +1,6 @@
 package pl.iomreborn.gui;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,13 +9,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import pl.iomreborn.ImageOnMapReborn;
 import pl.iomreborn.Perm;
-import pl.iomreborn.config.PluginConfig;
 import pl.iomreborn.map.ImageMap;
+import pl.iomreborn.map.LimitContext;
 import pl.iomreborn.map.MapManager;
 import pl.iomreborn.map.PosterMap;
+import pl.iomreborn.map.Quota;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.UUID;
 
 /** /maps: paginated list of a player's images with usage statistics. */
@@ -137,37 +140,45 @@ public final class MapListGui extends Gui {
         return icon(Material.BARRIER, text("gui.list.empty.other", ownerName), null);
     }
 
+    /** The owner's limits: with their permissions while they are online, else those of config.yml. */
+    private Quota quota() {
+        Player online = Bukkit.getPlayer(owner);
+        return Quota.of(plugin.settings(), online != null ? LimitContext.of(online) : LimitContext.CONFIG_ONLY);
+    }
+
     private ItemStack statsIcon() {
         MapManager maps = plugin.mapManager();
-        PluginConfig config = plugin.settings();
         int images = maps.getImageCount(owner);
         int used = maps.getMapCount(owner);
-        int global = config.mapGlobalLimit();
-        int personal = config.mapPlayerLimit();
+        Quota quota = quota();
 
         List<String> lore = new ArrayList<>();
         lore.add("");
         lore.add(messages().plural(viewer, "gui.stats.images", images));
         lore.add(messages().plural(viewer, "gui.stats.maps", used));
-        if (global > 0 || personal > 0) {
-            int left = Integer.MAX_VALUE;
-            if (global > 0) {
-                left = Math.min(left, global - maps.getTotalMapCount());
-            }
-            if (personal > 0) {
-                left = Math.min(left, personal - used);
-            }
-            left = Math.max(0, left);
-            int percent = used + left == 0 ? 100 : (int) Math.round(100.0 * used / (used + left));
+        if (quota.hasLimits()) {
             lore.add("");
             lore.add(text("gui.stats.limits-title"));
             lore.add("");
-            lore.add(text("gui.stats.server-limit", global > 0 ? String.valueOf(global) : text("gui.stats.unlimited")));
-            lore.add(text("gui.stats.player-limit", personal > 0 ? String.valueOf(personal) : text("gui.stats.unlimited")));
-            lore.add("");
-            lore.add(text("gui.stats.quota-used", percent));
-            lore.add(messages().plural(viewer, "gui.stats.maps-left", left));
+            lore.add(text("gui.stats.server-limit",
+                    limitText(quota.serverMaps() > 0 ? OptionalInt.of(quota.serverMaps()) : OptionalInt.empty())));
+            lore.add(text("gui.stats.player-map-limit", limitText(quota.playerMapLimit())));
+            if (quota.permissionImages().isPresent()) {
+                lore.add(text("gui.stats.player-image-limit", quota.permissionImages().getAsInt()));
+            }
+            OptionalInt left = quota.mapsLeft(used, maps.getTotalMapCount());
+            if (left.isPresent()) {
+                int free = left.getAsInt();
+                int percent = used + free == 0 ? 100 : (int) Math.round(100.0 * used / (used + free));
+                lore.add("");
+                lore.add(text("gui.stats.quota-used", percent));
+                lore.add(messages().plural(viewer, "gui.stats.maps-left", free));
+            }
         }
         return icon(Material.ENCHANTED_BOOK, text("gui.stats.title"), lore);
+    }
+
+    private String limitText(OptionalInt limit) {
+        return limit.isPresent() ? String.valueOf(limit.getAsInt()) : text("gui.stats.unlimited");
     }
 }

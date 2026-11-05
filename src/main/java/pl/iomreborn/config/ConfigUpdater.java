@@ -76,6 +76,10 @@ public final class ConfigUpdater {
 
     private static final String LANG_COMMENT =
             "Language of the plugin: en-US (English) or pl-PL (Polish). Empty = the language of the system.";
+    private static final String TIMEOUT_COMMENT =
+            "Time limit for connecting and for reading (seconds). A whole download may take 3 times as long.";
+    private static final String PIXELS_COMMENT =
+            "16 000 000 is about 4000 x 4000 px, 40 000 000 about 6300 x 6300 px. It also limits the size of posters.";
 
     /**
      * Comments of config.yml files written by older versions (the Polish ones of 1.0.0, and English ones that have
@@ -114,8 +118,8 @@ public final class ConfigUpdater {
                     "skips this list – to enforce the list, take that permission away (e.g. set it to false in "
                             + "LuckPerms)."),
             Map.entry("Można użyć *.domena.pl dla wszystkich subdomen.", "Use *.example.com for all subdomains."),
-            Map.entry("Limit czasu połączenia i odczytu (sekundy).",
-                    "Time limit for connecting and for reading (seconds)."),
+            Map.entry("Limit czasu połączenia i odczytu (sekundy).", TIMEOUT_COMMENT),
+            Map.entry("Time limit for connecting and for reading (seconds).", TIMEOUT_COMMENT),
             Map.entry("Maksymalny rozmiar pobieranego pliku (MB).", "Maximum size of a downloaded file (MB)."),
             Map.entry("Blokuje linki do adresów w sieci lokalnej (127.0.0.1, 192.168.x.x itd.),",
                     "Blocks links to local network addresses (127.0.0.1, 192.168.x.x and so on),"),
@@ -123,8 +127,8 @@ public final class ConfigUpdater {
                     "so players cannot use the server to reach internal services."),
             Map.entry("Maksymalna liczba pikseli obrazu (szerokość x wysokość) – chroni RAM serwera.",
                     "Maximum number of pixels of a picture (width x height) – protects the server's RAM."),
-            Map.entry("40 000 000 to ok. 6300 x 6300 px. Dotyczy też docelowego rozmiaru plakatu.",
-                    "40 000 000 is about 6300 x 6300 px. It also applies to the size of a poster."),
+            Map.entry("40 000 000 to ok. 6300 x 6300 px. Dotyczy też docelowego rozmiaru plakatu.", PIXELS_COMMENT),
+            Map.entry("40 000 000 is about 6300 x 6300 px. It also applies to the size of a poster.", PIXELS_COMMENT),
             Map.entry("true = płynne skalowanie przy zmniejszaniu (lepsze zdjęcia),",
                     "true = smooth scaling when shrinking (better photos),"),
             Map.entry("false = skalowanie \"piksel w piksel\" jak w starym ImageOnMap.",
