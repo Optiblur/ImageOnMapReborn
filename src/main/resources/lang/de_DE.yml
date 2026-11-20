@@ -1,0 +1,277 @@
+# ImageOnMapReborn – German messages.
+# Color codes: &a, &c... (and &#RRGGBB). Placeholders: {0}, {1}...
+# Keys missing from this file are taken from the version bundled with the plugin.
+
+general:
+  no-permission: "&cDas darfst du nicht."
+  player-only: "&cDiesen Befehl können nur Spieler benutzen."
+  player-not-found: "&cEs wurde kein Spieler namens {0} gefunden."
+  player-not-online: "&c{0} ist gerade nicht online."
+  map-not-found: "&cEs wurde kein Bild mit diesem Namen gefunden."
+  owner-required: "&cGib in der Konsole auch den Besitzer an: <Spieler>:<Kartenname>."
+  unknown-subcommand: "&cDiesen Unterbefehl gibt es nicht. Versuche &f/{0} help&c."
+  usage: "&cSo benutzt du ihn: &f{0}"
+  no-longer-allowed: "&cDeine Rechte haben sich geändert, diese Aktion ist nicht mehr verfügbar."
+  inventory-overflow: "&eDein Inventar ist voll, deshalb warten noch einige Karten auf dich. Hole sie mit &f/maptool getremaining&e ab."
+  internal-error: "&cAuf dem Server ist etwas schiefgelaufen, die Details stehen in der Konsole."
+
+map:
+  default-name: "Karte"
+
+item:
+  single:
+    name: "&6{0}"
+  part:
+    name-grid: "&6{0} &7[Zeile {1}, Spalte {2}]"
+    name-index: "&6{0} &7[Teil {1}]"
+  splatter:
+    name: "&6{0} &8| &ePoster &7{1}×{2}"
+    lore:
+      - "&8ID: {0}"
+      - ""
+      - "&9Größe"
+      - "&7{1} breit, {2} hoch – {3} Rahmen"
+      - ""
+      - "&9Aufhängen"
+      - "&7Hänge leere Rahmen an eine Wand,"
+      - "&7einen Boden oder eine Decke, so viele"
+      - "&7wie oben angegeben. Klicke mit diesem"
+      - "&7Item rechts auf den unteren linken."
+      - ""
+      - "&9Abnehmen"
+      - "&7Ducke dich und schlage eine seiner Karten."
+
+render:
+  busy: "&cMoment, dein vorheriges Bild wird noch verarbeitet."
+  started: "&2Dein Bild wird erstellt..."
+  finished: "&2Dein Bild ist fertig!"
+  failed: "&cDie Karte konnte nicht erstellt werden: {0}"
+  update-started: "&2Das Bild wird ersetzt..."
+  update-finished: "&2Das neue Bild wird jetzt auf den Karten angezeigt."
+  finished-animated: "&2Dein animiertes Bild ist fertig! &7({0} Frames)"
+  update-finished-animated: "&2Die neue Animation läuft jetzt auf den Karten. &7({0} Frames)"
+  animation-not-allowed: "&eDu darfst keine animierten Karten erstellen, deshalb wird nur das erste Frame des GIFs verwendet."
+  animation-too-big: "&eEine Animation aus {0} × {1} Karten ist zu groß (das Limit liegt bei {2} Karten), deshalb wird nur das erste Frame des GIFs verwendet."
+  animation-too-many-pixels: "&eEin GIF mit {0} × {1} px ist zu groß für eine Animation, deshalb wird nur sein erstes Frame verwendet."
+  animation-too-heavy: "&eDieses GIF hat zu viele große Frames für eine Animation, deshalb wird nur sein erstes Frame verwendet."
+
+error:
+  invalid-url: "dieser Link sieht nicht gültig aus."
+  unsupported-protocol: "es funktionieren nur Links, die mit http:// oder https:// beginnen."
+  untrusted-host: "Bilder von dieser Website sind hier nicht erlaubt. Frag einen Administrator, wenn du meinst, dass sie erlaubt sein sollten."
+  private-address: "Links zu lokalen oder privaten Netzwerken sind gesperrt."
+  unknown-host: "der Server {0} wurde nicht gefunden."
+  http: "die Website hat mit HTTP {0} {1} geantwortet."
+  too-many-redirects: "der Link leitet zu oft weiter."
+  download-too-large: "die Datei ist größer als das Limit von {0} MB."
+  timeout: "die Website hat zu lange zum Antworten gebraucht."
+  download-failed: "der Download hat nicht funktioniert ({0})."
+  not-an-image: "der Link zeigt nicht auf ein PNG-, JPEG-, GIF-, BMP- oder WebP-Bild."
+  imgur-gallery: "Imgur-Alben und -Galerien können nicht verwendet werden. Öffne das Bild, klicke mit der rechten Maustaste darauf und kopiere die Bildadresse."
+  image-too-wide: "das Bild ist breiter als die erlaubten {0} px."
+  image-too-tall: "das Bild ist höher als die erlaubten {0} px."
+  image-too-big: "ein Bild mit {0} × {1} px ist zu groß zum Verarbeiten."
+  poster-too-big: "ein Poster aus {0} × {1} Karten wäre zu groß."
+  limit-server-maps: "der Server hat alle Karten verbraucht, die er für Bilder erlaubt."
+  limit-player-maps: "du würdest dein Limit von {0} Karten überschreiten."
+  limit-permission-images: "du darfst höchstens {0} Bilder besitzen und hast bereits {1}."
+  limit-permission-maps: "du darfst höchstens {0} Karten verwenden und verwendest bereits {1}."
+  save-failed: "das Bild konnte nicht auf die Festplatte des Servers geschrieben werden."
+  out-of-memory: "dem Server ist bei diesem Bild der Speicher ausgegangen."
+  internal: "ein unerwarteter Fehler ist aufgetreten, siehe Konsole."
+  invalid-file-name: "gib den Namen eines PNG-, JPEG-, GIF-, BMP- oder WebP-Bildes aus dem Upload-Ordner an, z. B. file:logo.png."
+  file-not-found: "im Upload-Ordner gibt es kein Bild namens {0}."
+  file-unreadable: "das Bild {0} konnte nicht gelesen werden."
+  file-not-allowed: "du darfst keine Bilder aus dem Upload-Ordner des Servers verwenden."
+
+splatter:
+  no-permission: "&cDu darfst keine Poster aufhängen."
+  not-enough-space: "&cDieses Poster braucht hier {0} × {1} leere Rahmen."
+
+update:
+  available: "&eEine neue Version von ImageOnMapReborn ist erschienen: &f{0}&e (dieser Server hat &f{1}&e)."
+  download: "&eHier herunterladen: &f{0}"
+
+command:
+  help:
+    header: "&6ImageOnMapReborn &7v{0} &8– &7verfügbare Befehle:"
+    entry: "&f{0} &8– &7{1}"
+  new:
+    usage: "/tomap <Link|file:Name> [resize|resize-stretched|resize-covered] [Breite Höhe] [dither|nodither]"
+    description: "macht aus einem Bild aus dem Internet Karten"
+    no-url: "&cBitte gib den Link eines Bildes an."
+    invalid-mode: "&cUnbekannter Modus. Wähle resize, resize-stretched oder resize-covered."
+    invalid-size: "&cGib die Größe in Karten als zwei Zahlen an (4 3), oder als 4x3 bzw. 4*3."
+  list:
+    usage: "/maptool list [Spieler]"
+    description: "zeigt die Bilder (klicke eins an, um es zu bekommen)"
+    none: "&7Es gibt noch keine Bilder."
+    header:
+      one: "&f&l{0} Bild:"
+      other: "&f&l{0} Bilder:"
+    hover: "&a&l{0}\n&7{1}, {2}\n\n&7Klicken, um es zu bekommen"
+    console-entry: "&f{0} &7– {1} ({2})"
+    parts: "{0} Teile"
+  get:
+    usage: "/maptool get [Spieler:]<Kartenname>"
+    description: "gibt dir eine Kopie eines deiner Bilder"
+  getremaining:
+    usage: "/maptool getremaining"
+    description: "gibt die Karten aus, die nicht in dein Inventar gepasst haben"
+    none: "&7Es wartet nichts auf dich."
+    inventory-full: "&cMach zuerst etwas Platz im Inventar frei."
+    remaining:
+      one: "&7Es wartet noch {0} Karte."
+      other: "&7Es warten noch {0} Karten."
+    done: "&aDu hast alles abgeholt."
+  explore:
+    usage: "/maps [Spieler]"
+    description: "öffnet die Bildergalerie"
+  give:
+    usage: "/givemap <Spieler> [Besitzer:]<Kartenname>"
+    description: "gibt einem Spieler ein Bild"
+    success: "&a{1} hat &6{0}&a erhalten."
+  rename:
+    usage: "/maptool rename [Spieler:]<Kartenname> <neuer Name>"
+    description: "ändert den Namen eines Bildes"
+    quotes-hint: "&7Setze Namen mit Leerzeichen in Anführungszeichen: &f/maptool rename \"Alter Name\" \"Neuer Name\""
+    invalid-name: "&cDer Name darf nicht leer sein."
+    success: "&aDas Bild heißt jetzt &6{0}&a (ID: {1})."
+    prompt: "&eSchreibe den neuen Namen für &6{0}&e in den Chat, oder &fabbrechen&e, um ihn zu behalten."
+    cancelled: "&7Der Name wurde nicht geändert."
+  update:
+    usage: "/maptool update [Spieler:]<Kartenname> <neuer Link|file:Name> [stretched|covered] [dither|nodither]"
+    description: "zeichnet ein anderes Bild auf dieselben Karten"
+    invalid-mode: "&cUnbekannter Modus. Benutze stretched oder covered, oder nichts, um die Proportionen zu behalten."
+  delete:
+    usage: "/maptool delete [Spieler:]<Kartenname>"
+    description: "löscht ein Bild endgültig"
+    confirm-prompt: "&f&6{0}&f löschen?"
+    confirm-button: "&c&l[Ja, löschen]"
+    confirm-hover: "&cDas Bild und seine Karten können danach nicht wiederhergestellt werden."
+    confirm-console: "&fUm &6{0}&f wirklich zu löschen, führe aus: &e{1}"
+    success: "&aDas Bild wurde gelöscht."
+  import:
+    usage: "/maptool import [Ordner]"
+    description: "importiert die Bilder des alten ImageOnMap erneut"
+    start: "&7ImageOnMap-Daten werden aus &f{0}&7 gelesen..."
+    not-found: "&cIn {0} gibt es keine ImageOnMap-Daten."
+    result: "&aImport abgeschlossen: {0} Spielerdateien gelesen, {1} Bilder ({2} Karten) hinzugefügt, {3} bereits bekannt, {4} Bilddateien kopiert, {5} Fehler."
+  reload:
+    usage: "/maptool reload"
+    description: "lädt config.yml und die Nachrichten neu"
+    done: "&aEinstellungen und Nachrichten neu geladen."
+  info:
+    usage: "/maptool info"
+    description: "zeigt die Version, den Update-Status und Statistiken"
+    header: "&8&m        &r &bImageOnMap&3Reborn &f{0} &8&m        "
+    author: "&7Autor: &f{0}"
+    images: "&7Bilder: &f{0} &7(Karten: {1}, Spieler: {2})"
+    uploads: "&7Bilder im Upload-Ordner: &f{0} &8(/tomap file:<Name>)"
+    limits: "&7Kartenlimits: &f{0} &7pro Spieler, &f{1} &7auf dem Server"
+    language: "&7Sprache: &f{0}"
+    server: "&7Server: &f{0}"
+    update-off: "&7Updates: &8die Prüfung ist ausgeschaltet"
+    update-unknown: "&7Updates: &8noch nicht geprüft"
+    update-latest: "&7Updates: &aaktuell"
+    update-newer: "&7Updates: &adieser Build ist neuer als die neueste Version ({0})"
+    update-available: "&7Updates: &eVersion &f{0}&e ist erschienen &8- &f{1}"
+
+gui:
+  list:
+    title:
+      own: "Meine Bilder ({0})"
+      other: "Bilder von {1} ({0})"
+    item:
+      name: "&a&l{0}"
+      single: "&fEine Karte"
+      poster: "&fPoster, {0}×{1} Karten"
+      poster-parts: "&fPoster, {0} Teile"
+      id: "&8ID: {0}"
+      left-click: "&eLinksklick&7, um es zu bekommen"
+      right-click: "&eRechtsklick&7, um seine Optionen zu öffnen"
+    empty:
+      own: "&cNoch keine Bilder"
+      own-hint:
+        - "&7Erstelle dein erstes mit"
+        - "&f/tomap <Link> [resize]"
+      own-no-permission:
+        - "&7Du darfst keine Bilder erstellen."
+      other: "&c{0} hat keine Bilder."
+  nav:
+    previous: "&e« Eine Seite zurück"
+    next: "&eNächste Seite »"
+    page: "&7Seite {0} von {1}"
+    left: "&e◀ Links"
+    right: "&eRechts ▶"
+    up: "&e▲ Hoch"
+    down: "&e▼ Runter"
+    shift-hint:
+      - "&7Shift-Klick springt einen ganzen Bildschirm weiter."
+  stats:
+    title: "&9Übersicht"
+    images:
+      one: "&f{0}&7 Bild"
+      other: "&f{0}&7 Bilder"
+    maps:
+      one: "&f{0}&7 Karte in Benutzung"
+      other: "&f{0}&7 Karten in Benutzung"
+    limits-title: "&9Limits"
+    server-limit: "&7Ganzer Server: &f{0}"
+    player-map-limit: "&7Dieser Spieler: &f{0}"
+    player-image-limit: "&7Bilder dieses Spielers: &f{0}"
+    unlimited: "kein Limit"
+    quota-used: "&7Verbraucht: &f{0}%"
+    maps-left:
+      one: "&f{0}&7 Karte noch verfügbar"
+      other: "&f{0}&7 Karten noch verfügbar"
+  detail:
+    title:
+      own: "Meine Bilder » {0}"
+      other: "{1} » {0}"
+    back:
+      name: "&a« Zurück"
+      lore:
+        - "&7Zurück zur Liste."
+    rename:
+      name: "&9Umbenennen"
+      lore:
+        - "&7Wähle einen neuen Namen für dieses Bild."
+        - "&7Namen helfen dir nur, deine Bilder zu finden."
+    delete:
+      name: "&cLöschen"
+      lore:
+        - "&7Entfernt dieses Bild endgültig,"
+        - "&7seine Karten werden leer."
+        - ""
+        - "&7Du musst es bestätigen."
+    get-all:
+      name: "&aNehmen"
+      lore:
+        - "&7Gibt die Karte oder das Poster-Item,"
+        - "&7das alle Teile auf einmal aufhängt."
+    part:
+      name: "&aTeil"
+      row: "&7Zeile &f{0}"
+      column: "&7Spalte &f{0}"
+      index: "&7Teil &f{0}"
+      click: "&eKlicke&7, um nur diesen Teil zu nehmen"
+    single:
+      click: "&eKlicke&7, um diese Karte zu bekommen"
+  delete:
+    title: "{0} löschen?"
+    info:
+      name: "&cDieses Bild wird gelöscht"
+      lore:
+        - "&7Seine Karten werden leer,"
+        - "&7auch die an den Wänden."
+        - ""
+        - "&7Name: &f{0}"
+        - "&7ID: &f{1}"
+        - "&7Karten: &f{2}"
+    confirm: "&cJa, löschen"
+    confirm-lore:
+      - "&7Das kann nicht rückgängig gemacht werden."
+    cancel: "&aNein, behalten"
+    cancel-lore:
+      - "&7Zurück, ohne zu löschen."

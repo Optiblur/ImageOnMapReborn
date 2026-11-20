@@ -1,0 +1,277 @@
+# ImageOnMapReborn – Spanish messages.
+# Color codes: &a, &c... (and &#RRGGBB). Placeholders: {0}, {1}...
+# Keys missing from this file are taken from the version bundled with the plugin.
+
+general:
+  no-permission: "&cNo tienes permiso para hacer esto."
+  player-only: "&cSolo los jugadores pueden usar este comando."
+  player-not-found: "&cNo se encontró ningún jugador llamado {0}."
+  player-not-online: "&c{0} no está conectado ahora mismo."
+  map-not-found: "&cNo se encontró ninguna imagen con ese nombre."
+  owner-required: "&cDesde la consola, añade también el dueño: <jugador>:<nombre del mapa>."
+  unknown-subcommand: "&cEse subcomando no existe. Prueba &f/{0} help&c."
+  usage: "&cCómo se usa: &f{0}"
+  no-longer-allowed: "&cTus permisos han cambiado, esta acción ya no está disponible."
+  inventory-overflow: "&eTu inventario está lleno, así que algunos mapas te están esperando. Usa &f/maptool getremaining&e para recogerlos."
+  internal-error: "&cAlgo ha fallado en el servidor, los detalles están en la consola."
+
+map:
+  default-name: "Mapa"
+
+item:
+  single:
+    name: "&6{0}"
+  part:
+    name-grid: "&6{0} &7[fila {1}, col. {2}]"
+    name-index: "&6{0} &7[pieza {1}]"
+  splatter:
+    name: "&6{0} &8| &ePóster &7{1}×{2}"
+    lore:
+      - "&8ID: {0}"
+      - ""
+      - "&9Tamaño"
+      - "&7{1} de ancho, {2} de alto – {3} marcos"
+      - ""
+      - "&9Cómo colgarlo"
+      - "&7Coloca marcos vacíos en una pared,"
+      - "&7el suelo o el techo, tantos como indica"
+      - "&7el tamaño. Haz clic derecho en el de abajo"
+      - "&7a la izquierda con este objeto en la mano."
+      - ""
+      - "&9Cómo quitarlo"
+      - "&7Agáchate y golpea cualquiera de sus mapas."
+
+render:
+  busy: "&cEspera, tu imagen anterior todavía se está procesando."
+  started: "&2Preparando tu imagen..."
+  finished: "&2¡Tu imagen está lista!"
+  failed: "&cNo se pudo crear el mapa: {0}"
+  update-started: "&2Reemplazando la imagen..."
+  update-finished: "&2La nueva imagen ya se muestra en los mapas."
+  finished-animated: "&2¡Tu imagen animada está lista! &7({0} fotogramas)"
+  update-finished-animated: "&2La nueva animación ya se reproduce en los mapas. &7({0} fotogramas)"
+  animation-not-allowed: "&eNo puedes crear mapas animados, así que solo se usa el primer fotograma del GIF."
+  animation-too-big: "&eUna animación de {0} × {1} mapas es demasiado grande (el límite es {2} mapas), así que solo se usa el primer fotograma del GIF."
+  animation-too-many-pixels: "&eUn GIF de {0} × {1} px es demasiado grande para animarlo, así que solo se usa su primer fotograma."
+  animation-too-heavy: "&eEste GIF tiene demasiados fotogramas grandes para animarlo, así que solo se usa su primer fotograma."
+
+error:
+  invalid-url: "ese enlace no parece válido."
+  unsupported-protocol: "solo funcionan los enlaces que empiezan por http:// o https://."
+  untrusted-host: "aquí no se permiten imágenes de este sitio web. Pregunta a un administrador si crees que deberían permitirse."
+  private-address: "los enlaces a redes locales o privadas están bloqueados."
+  unknown-host: "no se encontró el servidor {0}."
+  http: "el sitio web respondió con HTTP {0} {1}."
+  too-many-redirects: "el enlace redirige demasiadas veces."
+  download-too-large: "el archivo supera el límite de {0} MB."
+  timeout: "el sitio web tardó demasiado en responder."
+  download-failed: "la descarga no funcionó ({0})."
+  not-an-image: "el enlace no lleva a una imagen PNG, JPEG, GIF, BMP o WebP."
+  imgur-gallery: "no se pueden usar álbumes ni galerías de Imgur. Abre la imagen, haz clic derecho sobre ella y copia la dirección de la imagen."
+  image-too-wide: "la imagen es más ancha que los {0} px permitidos."
+  image-too-tall: "la imagen es más alta que los {0} px permitidos."
+  image-too-big: "una imagen de {0} × {1} px es demasiado grande para procesarla."
+  poster-too-big: "un póster de {0} × {1} mapas sería demasiado grande."
+  limit-server-maps: "el servidor ha agotado todos los mapas que permite para imágenes."
+  limit-player-maps: "superarías tu límite de {0} mapas."
+  limit-permission-images: "puedes tener como máximo {0} imágenes y ya tienes {1}."
+  limit-permission-maps: "puedes usar como máximo {0} mapas y ya usas {1}."
+  save-failed: "no se pudo guardar la imagen en el disco del servidor."
+  out-of-memory: "el servidor se quedó sin memoria con esta imagen."
+  internal: "ocurrió un error inesperado, mira la consola."
+  invalid-file-name: "indica el nombre de una imagen PNG, JPEG, GIF, BMP o WebP de la carpeta upload, p. ej. file:logo.png."
+  file-not-found: "no hay ninguna imagen llamada {0} en la carpeta upload."
+  file-unreadable: "no se pudo leer la imagen {0}."
+  file-not-allowed: "no tienes permiso para usar imágenes de la carpeta upload del servidor."
+
+splatter:
+  no-permission: "&cNo puedes colgar pósteres."
+  not-enough-space: "&cEste póster necesita aquí {0} × {1} marcos vacíos."
+
+update:
+  available: "&eHa salido una nueva versión de ImageOnMapReborn: &f{0}&e (este servidor tiene la &f{1}&e)."
+  download: "&eDescárgala aquí: &f{0}"
+
+command:
+  help:
+    header: "&6ImageOnMapReborn &7v{0} &8– &7comandos disponibles:"
+    entry: "&f{0} &8– &7{1}"
+  new:
+    usage: "/tomap <enlace|file:nombre> [resize|resize-stretched|resize-covered] [ancho alto] [dither|nodither]"
+    description: "convierte una imagen de internet en mapas"
+    no-url: "&cIndica el enlace de una imagen."
+    invalid-mode: "&cModo desconocido. Elige resize, resize-stretched o resize-covered."
+    invalid-size: "&cIndica el tamaño en mapas con dos números (4 3), o como 4x3 o 4*3."
+  list:
+    usage: "/maptool list [jugador]"
+    description: "muestra las imágenes (haz clic en una para recibirla)"
+    none: "&7Todavía no hay imágenes."
+    header:
+      one: "&f&l{0} imagen:"
+      other: "&f&l{0} imágenes:"
+    hover: "&a&l{0}\n&7{1}, {2}\n\n&7Haz clic para recibirla"
+    console-entry: "&f{0} &7– {1} ({2})"
+    parts: "{0} piezas"
+  get:
+    usage: "/maptool get [jugador:]<nombre del mapa>"
+    description: "te da una copia de una de tus imágenes"
+  getremaining:
+    usage: "/maptool getremaining"
+    description: "entrega los mapas que no cupieron en tu inventario"
+    none: "&7No te espera nada."
+    inventory-full: "&cPrimero libera espacio en tu inventario."
+    remaining:
+      one: "&7Todavía te espera {0} mapa."
+      other: "&7Todavía te esperan {0} mapas."
+    done: "&aLo has recogido todo."
+  explore:
+    usage: "/maps [jugador]"
+    description: "abre el explorador de imágenes"
+  give:
+    usage: "/givemap <jugador> [dueño:]<nombre del mapa>"
+    description: "entrega una imagen a un jugador"
+    success: "&a{1} ha recibido &6{0}&a."
+  rename:
+    usage: "/maptool rename [jugador:]<nombre del mapa> <nuevo nombre>"
+    description: "cambia el nombre de una imagen"
+    quotes-hint: "&7Pon entre comillas los nombres con espacios: &f/maptool rename \"Nombre viejo\" \"Nombre nuevo\""
+    invalid-name: "&cEl nombre no puede estar vacío."
+    success: "&aLa imagen ahora se llama &6{0}&a (ID: {1})."
+    prompt: "&eEscribe en el chat el nuevo nombre para &6{0}&e, o &fcancelar&e para dejarlo como está."
+    cancelled: "&7El nombre no se ha cambiado."
+  update:
+    usage: "/maptool update [jugador:]<nombre del mapa> <nuevo enlace|file:nombre> [stretched|covered] [dither|nodither]"
+    description: "dibuja otra imagen en los mismos mapas"
+    invalid-mode: "&cModo desconocido. Usa stretched o covered, o nada para mantener las proporciones."
+  delete:
+    usage: "/maptool delete [jugador:]<nombre del mapa>"
+    description: "elimina una imagen para siempre"
+    confirm-prompt: "&f¿Eliminar &6{0}&f?"
+    confirm-button: "&c&l[Sí, eliminar]"
+    confirm-hover: "&cLa imagen y sus mapas no se podrán recuperar después."
+    confirm-console: "&fPara eliminar &6{0}&f de verdad, ejecuta: &e{1}"
+    success: "&aLa imagen se ha eliminado."
+  import:
+    usage: "/maptool import [carpeta]"
+    description: "vuelve a importar las imágenes del antiguo ImageOnMap"
+    start: "&7Leyendo los datos de ImageOnMap de &f{0}&7..."
+    not-found: "&cNo hay datos de ImageOnMap en {0}."
+    result: "&aImportación terminada: {0} archivos de jugadores leídos, {1} imágenes ({2} mapas) añadidas, {3} ya conocidas, {4} archivos de imagen copiados, {5} errores."
+  reload:
+    usage: "/maptool reload"
+    description: "vuelve a cargar config.yml y los mensajes"
+    done: "&aAjustes y mensajes recargados."
+  info:
+    usage: "/maptool info"
+    description: "muestra la versión, el estado de las actualizaciones y estadísticas"
+    header: "&8&m        &r &bImageOnMap&3Reborn &f{0} &8&m        "
+    author: "&7Autor: &f{0}"
+    images: "&7Imágenes: &f{0} &7(mapas: {1}, jugadores: {2})"
+    uploads: "&7Imágenes en la carpeta upload: &f{0} &8(/tomap file:<nombre>)"
+    limits: "&7Límites de mapas: &f{0} &7por jugador, &f{1} &7en el servidor"
+    language: "&7Idioma: &f{0}"
+    server: "&7Servidor: &f{0}"
+    update-off: "&7Actualizaciones: &8la comprobación está desactivada"
+    update-unknown: "&7Actualizaciones: &8todavía sin comprobar"
+    update-latest: "&7Actualizaciones: &aal día"
+    update-newer: "&7Actualizaciones: &aesta compilación es más nueva que la última versión ({0})"
+    update-available: "&7Actualizaciones: &eha salido la versión &f{0}&e &8- &f{1}"
+
+gui:
+  list:
+    title:
+      own: "Mis imágenes ({0})"
+      other: "Imágenes de {1} ({0})"
+    item:
+      name: "&a&l{0}"
+      single: "&fUn mapa"
+      poster: "&fPóster, {0}×{1} mapas"
+      poster-parts: "&fPóster, {0} piezas"
+      id: "&8ID: {0}"
+      left-click: "&eClic izquierdo &7para recibirla"
+      right-click: "&eClic derecho &7para abrir sus opciones"
+    empty:
+      own: "&cTodavía no hay imágenes"
+      own-hint:
+        - "&7Crea la primera con"
+        - "&f/tomap <enlace> [resize]"
+      own-no-permission:
+        - "&7No tienes permiso para crear imágenes."
+      other: "&c{0} no tiene imágenes."
+  nav:
+    previous: "&e« Página anterior"
+    next: "&ePágina siguiente »"
+    page: "&7Página {0} de {1}"
+    left: "&e◀ Izquierda"
+    right: "&eDerecha ▶"
+    up: "&e▲ Arriba"
+    down: "&e▼ Abajo"
+    shift-hint:
+      - "&7Shift + clic para saltar una pantalla entera."
+  stats:
+    title: "&9Resumen"
+    images:
+      one: "&f{0}&7 imagen"
+      other: "&f{0}&7 imágenes"
+    maps:
+      one: "&f{0}&7 mapa en uso"
+      other: "&f{0}&7 mapas en uso"
+    limits-title: "&9Límites"
+    server-limit: "&7Todo el servidor: &f{0}"
+    player-map-limit: "&7Este jugador: &f{0}"
+    player-image-limit: "&7Imágenes de este jugador: &f{0}"
+    unlimited: "sin límite"
+    quota-used: "&7Usado: &f{0}%"
+    maps-left:
+      one: "&f{0}&7 mapa todavía disponible"
+      other: "&f{0}&7 mapas todavía disponibles"
+  detail:
+    title:
+      own: "Mis imágenes » {0}"
+      other: "{1} » {0}"
+    back:
+      name: "&a« Volver"
+      lore:
+        - "&7Vuelve a la lista."
+    rename:
+      name: "&9Cambiar nombre"
+      lore:
+        - "&7Elige un nuevo nombre para esta imagen."
+        - "&7Los nombres solo te ayudan a encontrar tus imágenes."
+    delete:
+      name: "&cEliminar"
+      lore:
+        - "&7Elimina esta imagen para siempre,"
+        - "&7sus mapas quedan en blanco."
+        - ""
+        - "&7Tendrás que confirmarlo."
+    get-all:
+      name: "&aObtener"
+      lore:
+        - "&7Te da el mapa, o el objeto de póster"
+        - "&7que cuelga todas las piezas a la vez."
+    part:
+      name: "&aPieza"
+      row: "&7Fila &f{0}"
+      column: "&7Columna &f{0}"
+      index: "&7Pieza &f{0}"
+      click: "&eHaz clic &7para coger solo esta pieza"
+    single:
+      click: "&eHaz clic &7para recibir este mapa"
+  delete:
+    title: "¿Eliminar {0}?"
+    info:
+      name: "&cEsta imagen se eliminará"
+      lore:
+        - "&7Sus mapas quedarán en blanco,"
+        - "&7también los que están en las paredes."
+        - ""
+        - "&7Nombre: &f{0}"
+        - "&7ID: &f{1}"
+        - "&7Mapas: &f{2}"
+    confirm: "&cSí, eliminarla"
+    confirm-lore:
+      - "&7Esto no se puede deshacer."
+    cancel: "&aNo, conservarla"
+    cancel-lore:
+      - "&7Volver sin eliminar."

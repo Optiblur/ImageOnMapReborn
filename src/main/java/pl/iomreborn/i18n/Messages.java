@@ -27,7 +27,7 @@ import java.util.logging.Level;
 public final class Messages {
 
     public static final String FALLBACK_LOCALE = "en_US";
-    private static final String[] BUNDLED = {"en_US", "pl_PL"};
+    private static final String[] BUNDLED = {"en_US", "pl_PL", "de_DE", "es_ES", "fr_FR", "pt_BR", "ru_RU"};
 
     private final JavaPlugin plugin;
     private final Map<String, Map<String, Object>> bundles = new HashMap<>();
@@ -280,7 +280,20 @@ public final class Messages {
                 }
                 return "many";
             }
+            case "ru":
+            case "uk": {
+                long mod10 = n % 10;
+                long mod100 = n % 100;
+                if (mod10 == 1 && mod100 != 11) {
+                    return "one";
+                }
+                if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+                    return "few";
+                }
+                return "many";
+            }
             case "fr":
+            case "pt":
                 return n <= 1 ? "one" : "other";
             default:
                 return n == 1 ? "one" : "other";

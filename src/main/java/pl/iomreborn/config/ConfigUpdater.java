@@ -75,7 +75,9 @@ public final class ConfigUpdater {
     }
 
     private static final String LANG_COMMENT =
-            "Language of the plugin: en-US (English) or pl-PL (Polish). Empty = the language of the system.";
+            "Language of the plugin: en-US (English), pl-PL (Polish), de-DE (German), es-ES (Spanish), fr-FR (French), "
+                    + "pt-BR (Portuguese, Brazil) or ru-RU (Russian). Empty = the language of the system.";
+    private static final String NEW_LANGUAGE_COMMENT = "(or add a new language, e.g. it_IT.yml).";
     private static final String TIMEOUT_COMMENT =
             "Time limit for connecting and for reading (seconds). A whole download may take 3 times as long.";
     private static final String PIXELS_COMMENT =
@@ -94,9 +96,12 @@ public final class ConfigUpdater {
                     "plugins/ImageOnMap/config.yml on the first start."),
             Map.entry("Język pluginu: pl-PL lub en-US. Pusty = język systemu.", LANG_COMMENT),
             Map.entry("Language of the plugin: pl-PL or en-US. Empty = the language of the system.", LANG_COMMENT),
+            Map.entry("Language of the plugin: en-US (English) or pl-PL (Polish). Empty = the language of the system.",
+                    LANG_COMMENT),
             Map.entry("Pliki tłumaczeń są w plugins/ImageOnMapReborn/lang/ i można je edytować",
                     "The translation files are in plugins/ImageOnMapReborn/lang/ and can be edited"),
-            Map.entry("(albo dodać nowy język, np. de_DE.yml).", "(or add a new language, e.g. de_DE.yml)."),
+            Map.entry("(albo dodać nowy język, np. de_DE.yml).", NEW_LANGUAGE_COMMENT),
+            Map.entry("(or add a new language, e.g. de_DE.yml).", NEW_LANGUAGE_COMMENT),
             Map.entry("true = wiadomości i GUI w języku klienta gracza (jeśli jest takie tłumaczenie),",
                     "true = messages and menus in the language of each player's game (if it is translated),"),
             Map.entry("false = zawsze język z opcji \"lang\".", "false = always the language of the \"lang\" option."),

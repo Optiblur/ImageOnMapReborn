@@ -19,14 +19,15 @@ import java.util.function.Consumer;
 public final class ChatPrompts implements Listener {
 
     private static final long TIMEOUT_MILLIS = 120_000L;
-    private static final Set<String> CANCEL_WORDS = Set.of("cancel", "anuluj", "-");
+    private static final Set<String> CANCEL_WORDS =
+            Set.of("cancel", "anuluj", "abbrechen", "cancelar", "отмена", "annuler", "-");
 
     private record Prompt(Consumer<String> onAnswer, Runnable onCancel, long expiresAt) {
     }
 
     private final Map<UUID, Prompt> prompts = new ConcurrentHashMap<>();
 
-    /** The callbacks run on the main thread. Typing "cancel" (or "anuluj") calls onCancel. */
+    /** The callbacks run on the main thread. Typing "cancel" (or the word in a bundled language) calls onCancel. */
     public void ask(Player player, Consumer<String> onAnswer, Runnable onCancel) {
         prompts.put(player.getUniqueId(), new Prompt(onAnswer, onCancel, System.currentTimeMillis() + TIMEOUT_MILLIS));
     }
