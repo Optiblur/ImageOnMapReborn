@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.2.2 – Five new languages
+
+### Added
+- **German, Spanish, French, Portuguese (Brazil) and Russian** translations (`de_DE.yml`, `es_ES.yml`,
+  `fr_FR.yml`, `pt_BR.yml`, `ru_RU.yml`), with the plural rules of Russian and Portuguese. They are copied to
+  `plugins/ImageOnMapReborn/lang/` on every server, also the ones that already run the plugin. The
+  translations may not be perfect – corrections are welcome on GitHub.
+- The rename prompt accepts the word for "cancel" in every included language (`abbrechen`, `cancelar`,
+  `annuler`, `отмена`), besides `cancel`, `anuluj` and `-`.
+
+### Changed
+- **`per-player-language: true` for new installations**, so each player sees messages and menus in the
+  language of their game; languages without a translation get the one of the `lang` option. Existing
+  `config.yml` files keep their value – set it to `true` yourself to use it.
+- The comment of the `lang` option in `config.yml` lists all the languages (existing files get the new
+  comment by themselves).
+
 ## 1.2.1 – Safer GIFs, downloads and limits
 
 A security update: the first three problems below could be caused by any player with the default permissions,

@@ -22,6 +22,15 @@ tworzyć od nowa.
 Gotowy plik `.jar` jest na [SpigotMC](https://www.spigotmc.org/resources/imageonmapreborn.139800/) i w zakładce **Releases**; można też zbudować go samemu (sekcja
 [Budowanie ze źródeł](#budowanie-ze-źródeł)).
 
+### Nowości w 1.2.2
+
+- **Pięć nowych języków** – niemiecki, hiszpański, francuski, portugalski (Brazylia) i rosyjski, oprócz
+  angielskiego i polskiego. Tłumaczenia mogą nie być idealne – poprawki są mile widziane na GitHubie.
+- **Każdy gracz w swoim języku** – nowe instalacje mają włączone `per-player-language`, więc każdy gracz
+  widzi wiadomości i menu w języku swojej gry (dla innych języków – w języku z opcji `lang`). Serwery, które
+  już używają pluginu, zostają przy swoim ustawieniu: żeby z tego korzystać, ustaw `per-player-language: true`.
+- Przy zmianie nazwy przez czat działa słowo „anuluj” w każdym dołączonym języku (np. `abbrechen`, `annuler`).
+
 ### Nowości w 1.2.1
 
 Poprawka bezpieczeństwa – warto ją zainstalować na każdym serwerze:
@@ -78,7 +87,7 @@ Poprawka bezpieczeństwa – warto ją zainstalować na każdym serwerze:
 2. Wyłącz serwer.
 3. Usuń **tylko plik** `plugins/ImageOnMap-x.x.x.jar`. **Folderu `plugins/ImageOnMap` nie usuwaj** –
    nowy plugin czyta z niego dane.
-4. Wrzuć `ImageOnMapReborn-1.2.1.jar` do `plugins/`.
+4. Wrzuć `ImageOnMapReborn-1.2.2.jar` do `plugins/`.
 5. Włącz serwer. W konsoli pojawi się:
    ```
    [ImageOnMapReborn] Found ImageOnMap data in plugins/ImageOnMap, importing it ...
@@ -106,7 +115,7 @@ pluginu, kopiując `maps/` i `images/` z powrotem.
 > Jeśli stary plugin jest nadal zainstalowany, ImageOnMapReborn wypisze w konsoli duże ostrzeżenie –
 > oba pluginy nie powinny działać jednocześnie.
 
-### Aktualizacja ImageOnMapReborn (np. 1.2.0 → 1.2.1)
+### Aktualizacja ImageOnMapReborn (np. 1.2.1 → 1.2.2)
 
 Wyłącz serwer, podmień stary plik `ImageOnMapReborn-x.x.x.jar` na nowy i włącz serwer. To wszystko: mapy,
 ustawienia i tłumaczenia zostają. Nowe opcje są dopisywane na końcu `config.yml` (konsola wypisze, które),
@@ -240,8 +249,8 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 
 | Opcja | Domyślnie | Opis |
 |---|---|---|
-| `lang` | `en-US` | Język (`en-US`, `pl-PL`; pusty = język systemu). **Ustaw `pl-PL`, żeby mieć polski.** |
-| `per-player-language` | `false` | Wiadomości w języku klienta gracza |
+| `lang` | `en-US` | Język (`en-US`, `pl-PL`, `de-DE`, `es-ES`, `fr-FR`, `pt-BR`, `ru-RU`; pusty = język systemu). **Ustaw `pl-PL`, żeby mieć polski.** |
+| `per-player-language` | `true` | Wiadomości w języku klienta gracza (`false` na serwerach zainstalowanych przed 1.2.2) |
 | `map-global-limit` / `map-player-limit` | `0` / `200` | Limit map na serwer / na gracza (0 = bez limitu; OP-ów limit na gracza nie dotyczy) |
 | `limit-map-size-x` / `limit-map-size-y` | `0` | Maks. rozmiar obrazka w pikselach |
 | `save-full-image` | `false` | Zapis pełnego obrazu obok części |
@@ -265,8 +274,8 @@ uprawnienia moderatorskie (`…other`), `give` i administracyjne – tylko OP.
 > – ustaw je samodzielnie, żeby mieć tę samą ochronę. Graczom można też dać własne limity uprawnieniami
 > `imageonmap.maplimit.<n>` i `imageonmap.imagelimit.<n>`.
 
-Wszystkie teksty są w `plugins/ImageOnMapReborn/lang/pl_PL.yml` i `en_US.yml` – można je dowolnie
-zmieniać (kolory `&a`, `&#RRGGBB`), a nowy język dodać, kopiując plik jako np. `de_DE.yml`.
+Wszystkie teksty są w `plugins/ImageOnMapReborn/lang/` (`pl_PL.yml`, `en_US.yml`, `de_DE.yml`...) – można je dowolnie
+zmieniać (kolory `&a`, `&#RRGGBB`), a nowy język dodać, kopiując plik jako np. `it_IT.yml`.
 
 ---
 
@@ -279,7 +288,7 @@ zmieniać (kolory `&a`, `&#RRGGBB`), a nowy język dodać, kopiując plik jako n
 - pewniejsze wczytywanie obrazów po restarcie (stare wersje potrafiły pokazać pustą mapę, dopóki
   gracz nie zmienił slotu),
 - ochrona serwera: blokada linków do sieci lokalnej, limity rozmiaru pobierania i pamięci,
-- polskie tłumaczenie i edytowalne pliki językowe,
+- 7 języków (polski, angielski, niemiecki, hiszpański, francuski, portugalski, rosyjski), każdy gracz we własnym, edytowalne pliki językowe,
 - zmiana nazwy w GUI przez czat (zamiast tabliczki), uprawnienie `imageonmap.renameother`,
 - nie wysyła statystyk (bStats) – opcja `collect-data` ze starego configu jest ignorowana. Sprawdzanie
   aktualizacji tylko pyta SpigotMC (albo GitHub) o numer najnowszej wersji, nie wysyła żadnych danych
@@ -299,7 +308,7 @@ pobiera go przy pierwszym uruchomieniu i sprawdza jego sumę kontrolną.
 W Windows: `mvnw.cmd package`, z `JAVA_HOME` ustawionym na JDK 17+ (np.
 `set JAVA_HOME=C:\Program Files\Java\jdk-21`).
 
-Wynik: `target/ImageOnMapReborn-1.2.1.jar` (zawiera bibliotekę TwelveMonkeys do WebP, przeniesioną
+Wynik: `target/ImageOnMapReborn-1.2.2.jar` (zawiera bibliotekę TwelveMonkeys do WebP, przeniesioną
 do pakietu `pl.iomreborn.lib`, więc nie koliduje z innymi pluginami). `./mvnw test` uruchamia testy
 jednostkowe (format danych ImageOnMap, cięcie obrazów, geometria plakatów, parser komend, dekodowanie,
 dithering, klatki GIF-ów, pliki animacji, limity pobierania, limity map, aktualizacja configu, sprawdzanie
